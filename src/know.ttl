@@ -1,0 +1,1055 @@
+@prefix : <https://know.dev/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcat: <http://www.w3.org/ns/dcat#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix void: <http://rdfs.org/ns/void#> .
+@prefix schema: <https://schema.org/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix dcmitype: <http://purl.org/dc/dcmitype/> .
+@base <https://know.dev/> .
+
+<https://know.dev/> rdf:type owl:Ontology ;
+                     owl:imports dcterms: ,
+                                 <https://schema.org/version/latest/schemaorg-current-https.ttl> .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  https://know.dev/ancestor
+:ancestor rdf:type owl:ObjectProperty ;
+          rdfs:subPropertyOf :relative ;
+          owl:inverseOf :descendant ;
+          rdf:type owl:AsymmetricProperty ,
+                   owl:TransitiveProperty ,
+                   owl:IrreflexiveProperty ;
+          rdfs:domain :Person ;
+          rdfs:range :Person ;
+          rdfs:label "Ancestor"@en ,
+                     "Esivanhempi"@fi .
+
+
+###  https://know.dev/aunt
+:aunt rdf:type owl:ObjectProperty ;
+      rdfs:subPropertyOf :pibling ;
+      rdf:type owl:AsymmetricProperty ;
+      rdfs:domain :Person ;
+      rdfs:range :Person ;
+      rdfs:label "Aunt"@en ,
+                 "Täti"@fi .
+
+
+###  https://know.dev/birth
+:birth rdf:type owl:ObjectProperty ;
+       rdfs:subPropertyOf owl:topObjectProperty ;
+       rdfs:domain :Person ;
+       rdfs:range :Birth ;
+       rdfs:label "Birth"@en ,
+                  "Födelse"@sv ,
+                  "Syntymä"@fi .
+
+
+###  https://know.dev/brother
+:brother rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf :sibling ;
+         rdfs:domain :Person ;
+         rdfs:range :Person ;
+         rdfs:label "Brother"@en ,
+                    "Veli"@fi .
+
+
+###  https://know.dev/child
+:child rdf:type owl:ObjectProperty ;
+       rdfs:subPropertyOf :descendant ;
+       owl:inverseOf :parent ;
+       rdf:type owl:AsymmetricProperty ,
+                owl:IrreflexiveProperty ;
+       rdfs:domain :Person ;
+       rdfs:range :Person ;
+       owl:propertyDisjointWith :parent ;
+       rdfs:label "Child"@en ,
+                  "Lapsi"@fi .
+
+
+###  https://know.dev/colleague
+:colleague rdf:type owl:ObjectProperty ;
+           rdfs:subPropertyOf :knows ;
+           rdf:type owl:SymmetricProperty ,
+                    owl:IrreflexiveProperty ;
+           rdfs:domain :Person ;
+           rdfs:range :Person ;
+           rdfs:label "Colleague"@en ,
+                      "Kollega"@fi .
+
+
+###  https://know.dev/cousin
+:cousin rdf:type owl:ObjectProperty ;
+        rdfs:subPropertyOf :relative ;
+        rdf:type owl:SymmetricProperty ;
+        rdfs:domain :Person ;
+        rdfs:range :Person ;
+        rdfs:label "Cousin"@en ,
+                   "Serkku"@fi .
+
+
+###  https://know.dev/daughter
+:daughter rdf:type owl:ObjectProperty ;
+          rdfs:subPropertyOf :child ;
+          rdf:type owl:AsymmetricProperty ;
+          rdfs:domain :Person ;
+          rdfs:range :Person ;
+          rdfs:label "Daughter"@en ,
+                     "Tytär"@fi .
+
+
+###  https://know.dev/death
+:death rdf:type owl:ObjectProperty ;
+       rdfs:subPropertyOf owl:topObjectProperty ;
+       rdfs:domain :Person ;
+       rdfs:range :Death ;
+       rdfs:label "Death"@en ,
+                  "Död"@sv ,
+                  "Kuolema"@fi .
+
+
+###  https://know.dev/descendant
+:descendant rdf:type owl:ObjectProperty ;
+            rdfs:subPropertyOf :relative ;
+            rdf:type owl:AsymmetricProperty ,
+                     owl:TransitiveProperty ,
+                     owl:IrreflexiveProperty ;
+            rdfs:domain :Person ;
+            rdfs:range :Person ;
+            rdfs:label "Descendant"@en ,
+                       "Jälkeläinen"@fi .
+
+
+###  https://know.dev/father
+:father rdf:type owl:ObjectProperty ;
+        rdfs:subPropertyOf :parent ;
+        rdf:type owl:FunctionalProperty ,
+                 owl:AsymmetricProperty ,
+                 owl:IrreflexiveProperty ;
+        rdfs:domain :Person ;
+        rdfs:range :Person ;
+        rdfs:label "Father"@en ,
+                   "Isä"@fi .
+
+
+###  https://know.dev/grandchild
+:grandchild rdf:type owl:ObjectProperty ;
+            rdfs:subPropertyOf :descendant ;
+            owl:inverseOf :grandparent ;
+            rdf:type owl:AsymmetricProperty ,
+                     owl:IrreflexiveProperty ;
+            rdfs:domain :Person ;
+            rdfs:range :Person ;
+            owl:propertyChainAxiom ( :child
+                                     :child
+                                   ) ;
+            rdfs:label "Grandchild"@en ,
+                       "Lapsenlapsi"@fi .
+
+
+###  https://know.dev/granddaughter
+:granddaughter rdf:type owl:ObjectProperty ;
+               rdfs:subPropertyOf :grandchild ;
+               rdf:type owl:AsymmetricProperty ;
+               rdfs:domain :Person ;
+               rdfs:range :Person ;
+               rdfs:label "Granddaughter"@en ,
+                          "Lapsentytär"@fi .
+
+
+###  https://know.dev/grandfather
+:grandfather rdf:type owl:ObjectProperty ;
+             rdfs:subPropertyOf :grandparent ;
+             rdf:type owl:AsymmetricProperty ;
+             rdfs:domain :Person ;
+             rdfs:range :Person ;
+             rdfs:label "Grandfather"@en ,
+                        "Isoisä"@fi .
+
+
+###  https://know.dev/grandmother
+:grandmother rdf:type owl:ObjectProperty ;
+             rdfs:subPropertyOf :grandparent ;
+             rdf:type owl:AsymmetricProperty ;
+             rdfs:domain :Person ;
+             rdfs:range :Person ;
+             rdfs:label "Grandmother"@en ,
+                        "Isoäiti"@fi .
+
+
+###  https://know.dev/grandparent
+:grandparent rdf:type owl:ObjectProperty ;
+             rdfs:subPropertyOf :ancestor ;
+             rdf:type owl:AsymmetricProperty ,
+                      owl:IrreflexiveProperty ;
+             rdfs:domain :Person ;
+             rdfs:range :Person ;
+             owl:propertyChainAxiom ( :parent
+                                      :parent
+                                    ) ;
+             rdfs:label "Grandparent"@en ,
+                        "Isovanhempi"@fi .
+
+
+###  https://know.dev/grandson
+:grandson rdf:type owl:ObjectProperty ;
+          rdfs:subPropertyOf :grandchild ;
+          rdf:type owl:AsymmetricProperty ;
+          rdfs:domain :Person ;
+          rdfs:range :Person ;
+          rdfs:label "Grandson"@en ,
+                     "Lapsenpoika"@fi .
+
+
+###  https://know.dev/husband
+:husband rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf :spouse ;
+         rdf:type owl:IrreflexiveProperty ;
+         rdfs:domain :Person ;
+         rdfs:range :Person ;
+         rdfs:label "Aviomies"@fi ,
+                    "Husband"@en .
+
+
+###  https://know.dev/knows
+:knows rdf:type owl:ObjectProperty ;
+       rdfs:subPropertyOf owl:topObjectProperty ;
+       rdf:type owl:SymmetricProperty ,
+                owl:ReflexiveProperty ;
+       rdfs:domain :Person ;
+       rdfs:range :Person ;
+       rdfs:label "Knows"@en ,
+                  "Känner"@sv ,
+                  "Tuntee"@fi .
+
+
+###  https://know.dev/link
+:link rdf:type owl:ObjectProperty ;
+      rdfs:subPropertyOf owl:topObjectProperty ;
+      rdfs:domain :Thing ;
+      rdfs:range :Link ;
+      rdfs:label "Link"@en ,
+                 "Linkki"@fi ,
+                 "Länk"@sv .
+
+
+###  https://know.dev/member
+:member rdf:type owl:ObjectProperty ;
+        rdfs:subPropertyOf owl:topObjectProperty ;
+        owl:inverseOf :memberOf ;
+        rdfs:domain :Group ;
+        rdfs:range :Person ;
+        rdfs:label "Jäsen"@fi ,
+                   "Medlem"@sv ,
+                   "Member"@en .
+
+
+###  https://know.dev/memberOf
+:memberOf rdf:type owl:ObjectProperty ;
+          rdfs:subPropertyOf owl:topObjectProperty ;
+          rdf:type owl:TransitiveProperty ,
+                   owl:IrreflexiveProperty ;
+          rdfs:domain :Person ;
+          rdfs:range :Group ;
+          rdfs:label "Jäsenyys"@fi ,
+                     "Medlemskap"@sv ,
+                     "Member Of"@en .
+
+
+###  https://know.dev/mother
+:mother rdf:type owl:ObjectProperty ;
+        rdfs:subPropertyOf :parent ;
+        rdf:type owl:FunctionalProperty ,
+                 owl:AsymmetricProperty ,
+                 owl:IrreflexiveProperty ;
+        rdfs:domain :Person ;
+        rdfs:range :Person ;
+        rdfs:label "Mother"@en ,
+                   "Äiti"@fi .
+
+
+###  https://know.dev/nephew
+:nephew rdf:type owl:ObjectProperty ;
+        rdfs:subPropertyOf :nibling ;
+        rdf:type owl:AsymmetricProperty ;
+        rdfs:domain :Person ;
+        rdfs:range :Person ;
+        rdfs:label "Nephew"@en ,
+                   "Sisarenpoika"@fi .
+
+
+###  https://know.dev/nibling
+:nibling rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf :relative ;
+         owl:inverseOf :pibling ;
+         rdf:type owl:AsymmetricProperty ;
+         rdfs:domain :Person ;
+         rdfs:range :Person ;
+         rdfs:comment "Niece or nephew."@en ;
+         rdfs:label "Nibling"@en .
+
+
+###  https://know.dev/niece
+:niece rdf:type owl:ObjectProperty ;
+       rdfs:subPropertyOf :nibling ;
+       rdf:type owl:AsymmetricProperty ;
+       rdfs:domain :Person ;
+       rdfs:range :Person ;
+       rdfs:label "Niece"@en ,
+                  "Sisarentytär"@fi .
+
+
+###  https://know.dev/parent
+:parent rdf:type owl:ObjectProperty ;
+        rdfs:subPropertyOf :ancestor ;
+        rdf:type owl:AsymmetricProperty ,
+                 owl:IrreflexiveProperty ;
+        rdfs:domain :Person ;
+        rdfs:range :Person ;
+        rdfs:label "Parent"@en ,
+                   "Vanhempi"@fi .
+
+
+###  https://know.dev/partner
+:partner rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf owl:topObjectProperty ,
+                            :knows ;
+         rdf:type owl:SymmetricProperty ,
+                  owl:IrreflexiveProperty ;
+         rdfs:domain :Person ;
+         rdfs:range :Person ;
+         rdfs:label "Kumppani"@fi ,
+                    "Partner"@en ,
+                    "Partner"@sv .
+
+
+###  https://know.dev/pibling
+:pibling rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf :relative ;
+         rdf:type owl:AsymmetricProperty ;
+         rdfs:domain :Person ;
+         rdfs:range :Person ;
+         rdfs:comment "Parent's sibling (aunt or uncle)."@en ;
+         rdfs:label "Pibling"@en .
+
+
+###  https://know.dev/place
+:place rdf:type owl:ObjectProperty ;
+       rdfs:subPropertyOf owl:topObjectProperty ;
+       rdf:type owl:FunctionalProperty ;
+       rdfs:domain :Event ;
+       rdfs:range :Place ;
+       rdfs:label "Paikka"@fi ,
+                  "Place"@en ,
+                  "Plats"@sv .
+
+
+###  https://know.dev/relative
+:relative rdf:type owl:ObjectProperty ;
+          rdfs:subPropertyOf owl:topObjectProperty ,
+                             :knows ;
+          rdf:type owl:SymmetricProperty ,
+                   owl:TransitiveProperty ,
+                   owl:ReflexiveProperty ;
+          rdfs:domain :Person ;
+          rdfs:range :Person ;
+          rdfs:comment "A person connected by blood or marriage."@en ;
+          rdfs:label "Relative"@en ,
+                     "Släkting"@sv ,
+                     "Sukulainen"@fi .
+
+
+###  https://know.dev/sibling
+:sibling rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf :relative ;
+         rdf:type owl:SymmetricProperty ;
+         rdfs:domain :Person ;
+         rdfs:range :Person ;
+         rdfs:label "Sibling"@en ,
+                    "Sisarus"@fi .
+
+
+###  https://know.dev/sister
+:sister rdf:type owl:ObjectProperty ;
+        rdfs:subPropertyOf :sibling ;
+        rdfs:domain :Person ;
+        rdfs:range :Person ;
+        rdfs:label "Sisko"@fi ,
+                   "Sister"@en .
+
+
+###  https://know.dev/son
+:son rdf:type owl:ObjectProperty ;
+     rdfs:subPropertyOf :child ;
+     rdf:type owl:AsymmetricProperty ;
+     rdfs:domain :Person ;
+     rdfs:range :Person ;
+     rdfs:label "Poika"@fi ,
+                "Son"@en .
+
+
+###  https://know.dev/spouse
+:spouse rdf:type owl:ObjectProperty ;
+        rdfs:subPropertyOf :partner ,
+                           :relative ;
+        rdf:type owl:SymmetricProperty ,
+                 owl:IrreflexiveProperty ;
+        rdfs:domain :Person ;
+        rdfs:range :Person ;
+        rdfs:label "Puoliso"@fi ,
+                   "Spouse"@en .
+
+
+###  https://know.dev/stepchild
+:stepchild rdf:type owl:ObjectProperty ;
+           rdfs:subPropertyOf :relative ;
+           owl:inverseOf :stepparent ;
+           rdf:type owl:AsymmetricProperty ,
+                    owl:IrreflexiveProperty ;
+           rdfs:domain :Person ;
+           rdfs:range :Person ;
+           rdfs:label "Lapsipuoli"@fi ,
+                      "Stepchild"@en .
+
+
+###  https://know.dev/stepdaughter
+:stepdaughter rdf:type owl:ObjectProperty ;
+              rdfs:subPropertyOf :stepchild ;
+              rdf:type owl:AsymmetricProperty ,
+                       owl:IrreflexiveProperty ;
+              rdfs:domain :Person ;
+              rdfs:range :Person ;
+              rdfs:label "Stepdaughter"@en ,
+                         "Tytärpuoli"@fi .
+
+
+###  https://know.dev/stepfather
+:stepfather rdf:type owl:ObjectProperty ;
+            rdfs:subPropertyOf :stepparent ;
+            rdf:type owl:AsymmetricProperty ,
+                     owl:IrreflexiveProperty ;
+            rdfs:domain :Person ;
+            rdfs:range :Person ;
+            rdfs:label "Isäpuoli"@fi ,
+                       "Stepfather"@en .
+
+
+###  https://know.dev/stepmother
+:stepmother rdf:type owl:ObjectProperty ;
+            rdfs:subPropertyOf :stepparent ;
+            rdf:type owl:AsymmetricProperty ,
+                     owl:IrreflexiveProperty ;
+            rdfs:domain :Person ;
+            rdfs:range :Person ;
+            rdfs:label "Stepmother"@en ,
+                       "Äitipuoli"@fi .
+
+
+###  https://know.dev/stepparent
+:stepparent rdf:type owl:ObjectProperty ;
+            rdfs:subPropertyOf :relative ;
+            rdf:type owl:AsymmetricProperty ,
+                     owl:IrreflexiveProperty ;
+            rdfs:domain :Person ;
+            rdfs:range :Person ;
+            rdfs:label "Stepparent"@en .
+
+
+###  https://know.dev/stepson
+:stepson rdf:type owl:ObjectProperty ;
+         rdfs:subPropertyOf :stepchild ;
+         rdf:type owl:AsymmetricProperty ,
+                  owl:IrreflexiveProperty ;
+         rdfs:domain :Person ;
+         rdfs:range :Person ;
+         rdfs:label "Poikapuoli"@fi ,
+                    "Stepson"@en .
+
+
+###  https://know.dev/uncle
+:uncle rdf:type owl:ObjectProperty ;
+       rdfs:subPropertyOf :pibling ;
+       rdf:type owl:AsymmetricProperty ;
+       rdfs:domain :Person ;
+       rdfs:range :Person ;
+       rdfs:label "Setä"@fi ,
+                  "Uncle"@en .
+
+
+###  https://know.dev/wife
+:wife rdf:type owl:ObjectProperty ;
+      rdfs:subPropertyOf :spouse ;
+      rdf:type owl:IrreflexiveProperty ;
+      rdfs:domain :Person ;
+      rdfs:range :Person ;
+      rdfs:label "Vaimo"@fi ,
+                 "Wife"@en .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  http://purl.org/dc/terms/identifier
+dcterms:identifier owl:equivalentProperty :id .
+
+
+###  https://know.dev/account
+:account rdf:type owl:DatatypeProperty ;
+         rdfs:domain :Person ;
+         rdfs:range xsd:anyURI ;
+         rdfs:label "Account"@en ,
+                    "Konto"@sv ,
+                    "Tili"@fi .
+
+
+###  https://know.dev/age
+:age rdf:type owl:DatatypeProperty ;
+     rdfs:subPropertyOf owl:topDataProperty ;
+     rdf:type owl:FunctionalProperty ;
+     rdfs:domain :Person ;
+     rdfs:range xsd:nonNegativeInteger ;
+     rdfs:label "Age"@en ,
+                "Ikä"@fi ,
+                "Ålder"@sv .
+
+
+###  https://know.dev/alias
+:alias rdf:type owl:DatatypeProperty ;
+       rdfs:subPropertyOf owl:topDataProperty ;
+       rdfs:domain :Person ;
+       rdfs:range xsd:string ;
+       rdfs:comment "An alias or nickname of this person, if known."@en ;
+       rdfs:label "Alias"@en ,
+                  "Alias"@fi ,
+                  "Alias"@sv .
+
+
+###  https://know.dev/email
+:email rdf:type owl:DatatypeProperty ;
+       rdfs:subPropertyOf owl:topDataProperty ;
+       rdfs:domain :Person ;
+       rdfs:range xsd:string ;
+       rdfs:label "E-post"@sv ,
+                  "Email"@en ,
+                  "Sähköposti"@fi .
+
+
+###  https://know.dev/end
+:end rdf:type owl:DatatypeProperty ;
+     rdfs:subPropertyOf owl:topDataProperty ;
+     rdf:type owl:FunctionalProperty ;
+     rdfs:domain :Event ;
+     rdfs:range xsd:dateTime ;
+     rdfs:label "End"@en ,
+                "Loppu"@fi ,
+                "Slutet"@sv .
+
+
+###  https://know.dev/honorific
+:honorific rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf owl:topDataProperty ;
+           rdfs:domain :Person ;
+           rdfs:range xsd:string ;
+           rdfs:comment "The honorific title of this person, if known."@en ;
+           rdfs:label "Hederstitel"@sv ,
+                      "Honorific"@en ,
+                      "Honortitolo"@eo ,
+                      "Kunnianimike"@fi .
+
+
+###  https://know.dev/id
+:id rdf:type owl:DatatypeProperty ;
+    rdfs:subPropertyOf owl:topDataProperty ;
+    rdfs:domain :Thing ;
+    rdfs:range xsd:string ;
+    rdfs:label "Identificador"@es ,
+               "Identificador"@pt ,
+               "Identifier"@en ,
+               "Identifierare"@sv ,
+               "Identifikator"@de ,
+               "Identilo"@eo ,
+               "Kimlik"@tr ,
+               "Tunniste"@fi ,
+               "Ідентифікатор"@uk ,
+               "معرف"@ar .
+
+
+###  https://know.dev/logo
+:logo rdf:type owl:DatatypeProperty ;
+      rdfs:subPropertyOf owl:topDataProperty ;
+      rdfs:domain :Group ;
+      rdfs:range xsd:anyURI ;
+      rdfs:label "Logo"@en ,
+                 "Logo"@fi ,
+                 "Logo"@sv .
+
+
+###  https://know.dev/name
+:name rdf:type owl:DatatypeProperty ;
+      rdfs:subPropertyOf owl:topDataProperty ;
+      rdfs:domain :Thing ;
+      rdfs:range xsd:string ;
+      rdfs:label "Ad"@tr ,
+                 "Name"@de ,
+                 "Name"@en ,
+                 "Namn"@sv ,
+                 "Nimi"@fi ,
+                 "Nombre"@es ,
+                 "Nome"@pt ,
+                 "Nomo"@eo ,
+                 "Назва"@uk ,
+                 "اسم"@ar .
+
+
+###  https://know.dev/nationality
+:nationality rdf:type owl:DatatypeProperty ;
+             rdfs:subPropertyOf owl:topDataProperty ;
+             rdfs:domain :Person ;
+             rdfs:range xsd:string ;
+             rdfs:label "Kansallisuus"@fi ,
+                        "Nationalitet"@sv ,
+                        "Nationality"@en .
+
+
+###  https://know.dev/note
+:note rdf:type owl:DatatypeProperty ;
+      rdfs:subPropertyOf owl:topDataProperty ;
+      rdfs:domain :Thing ;
+      rdfs:range xsd:string ;
+      rdfs:label "Anteckning"@sv ,
+                 "Merkintä"@fi ,
+                 "Note"@en .
+
+
+###  https://know.dev/phone
+:phone rdf:type owl:DatatypeProperty ;
+       rdfs:subPropertyOf owl:topDataProperty ;
+       rdfs:domain :Person ;
+       rdfs:range xsd:string ;
+       rdfs:label "Phone"@en ,
+                  "Puhelin"@fi ,
+                  "Telefon"@sv .
+
+
+###  https://know.dev/photo
+:photo rdf:type owl:DatatypeProperty ;
+       rdfs:subPropertyOf owl:topDataProperty ;
+       rdfs:domain :Thing ;
+       rdfs:range xsd:anyURI ;
+       rdfs:label "Foto"@sv ,
+                  "Photo"@en ,
+                  "Valokuva"@fi .
+
+
+###  https://know.dev/sex
+:sex rdf:type owl:DatatypeProperty ;
+     rdfs:subPropertyOf owl:topDataProperty ;
+     rdf:type owl:FunctionalProperty ;
+     rdfs:domain :Person ;
+     rdfs:range xsd:string ;
+     rdfs:label "Kön"@sv ,
+                "Sex"@en ,
+                "Sukupuoli"@fi .
+
+
+###  https://know.dev/size
+:size rdf:type owl:DatatypeProperty ;
+      rdfs:subPropertyOf owl:topDataProperty ;
+      rdf:type owl:FunctionalProperty ;
+      rdfs:domain :Thing ;
+      rdfs:label "Koko"@fi ,
+                 "Size"@en ,
+                 "Storlek"@sv .
+
+
+###  https://know.dev/sizeInBytes
+:sizeInBytes rdf:type owl:DatatypeProperty ;
+             rdfs:subPropertyOf :size ;
+             rdf:type owl:FunctionalProperty ;
+             rdfs:domain :File ;
+             rdfs:range xsd:nonNegativeInteger ;
+             rdfs:label "Koko tavuina"@fi ,
+                        "Size in Bytes"@en ,
+                        "Storlek i byte"@sv .
+
+
+###  https://know.dev/speaks
+:speaks rdf:type owl:DatatypeProperty ;
+        rdfs:subPropertyOf owl:topDataProperty ;
+        rdfs:domain :Person ;
+        rdfs:range xsd:language ;
+        rdfs:label "Puhuu"@fi ,
+                   "Speaks"@en ,
+                   "Talar"@sv .
+
+
+###  https://know.dev/start
+:start rdf:type owl:DatatypeProperty ;
+       rdfs:subPropertyOf owl:topDataProperty ;
+       rdf:type owl:FunctionalProperty ;
+       rdfs:domain :Event ;
+       rdfs:range xsd:dateTime ;
+       rdfs:label "Alku"@fi ,
+                  "Start"@en ,
+                  "Start"@sv .
+
+
+###  https://know.dev/url
+:url rdf:type owl:DatatypeProperty ;
+     rdfs:subPropertyOf owl:topDataProperty ;
+     rdf:type owl:FunctionalProperty ;
+     rdfs:domain :Link ;
+     rdfs:range xsd:anyURI ;
+     rdfs:label "LRU"@es ,
+                "URL"@de ,
+                "URL"@en ,
+                "URL"@eo ,
+                "URL"@pt ,
+                "URL"@sv ,
+                "URL"@tr ,
+                "URL-osoite"@fi ,
+                "URL-адреси"@uk ,
+                "محدد موقع الموارد الموحد"@ar .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  https://know.dev/Activity
+:Activity rdf:type owl:Class ;
+          rdfs:subClassOf :Event ;
+          rdfs:label "Activity"@en .
+
+
+###  https://know.dev/Airport
+:Airport rdf:type owl:Class ;
+         owl:equivalentClass schema:Airport ;
+         rdfs:subClassOf :Place ;
+         rdfs:label "Airport"@en ,
+                    "Flygplats"@sv ,
+                    "Lentokenttä"@fi .
+
+
+###  https://know.dev/Appointment
+:Appointment rdf:type owl:Class ;
+             rdfs:subClassOf :Event ;
+             rdfs:label "Appointment"@en .
+
+
+###  https://know.dev/Birth
+:Birth rdf:type owl:Class ;
+       rdfs:subClassOf :Event ;
+       rdfs:label "Birth"@en .
+
+
+###  https://know.dev/Birthday
+:Birthday rdf:type owl:Class ;
+          rdfs:subClassOf :Event ;
+          rdfs:label "Birthday"@en .
+
+
+###  https://know.dev/BirthdayParty
+:BirthdayParty rdf:type owl:Class ;
+               rdfs:subClassOf :Party ;
+               rdfs:label "Birthday Party"@en .
+
+
+###  https://know.dev/BuddhistTemple
+:BuddhistTemple rdf:type owl:Class ;
+                owl:equivalentClass schema:BuddhistTemple ;
+                rdfs:subClassOf :Temple ;
+                rdfs:label "Buddhist Temple"@en .
+
+
+###  https://know.dev/Cafe
+:Cafe rdf:type owl:Class ;
+      owl:equivalentClass schema:CafeOrCoffeeShop ;
+      rdfs:subClassOf :Place ;
+      rdfs:label "Cafe"@en ,
+                 "Kahvila"@fi .
+
+
+###  https://know.dev/Church
+:Church rdf:type owl:Class ;
+        owl:equivalentClass schema:Church ;
+        rdfs:subClassOf :Temple ;
+        rdfs:label "Chuch"@en ,
+                   "Kirkko"@fi ,
+                   "Kyrka"@sv .
+
+
+###  https://know.dev/Class
+:Class rdf:type owl:Class ;
+       rdfs:subClassOf :Group ;
+       rdfs:label "Class"@en .
+
+
+###  https://know.dev/Community
+:Community rdf:type owl:Class ;
+           rdfs:subClassOf :Group ;
+           rdfs:label "Community"@en .
+
+
+###  https://know.dev/Company
+:Company rdf:type owl:Class ;
+         rdfs:subClassOf :Organization ;
+         rdfs:label "Company"@en .
+
+
+###  https://know.dev/Conference
+:Conference rdf:type owl:Class ;
+            rdfs:subClassOf :Meeting ;
+            owl:disjointWith :Meetup ;
+            rdfs:label "Conference"@en .
+
+
+###  https://know.dev/Congregation
+:Congregation rdf:type owl:Class ;
+              rdfs:subClassOf :Group ;
+              rdfs:label "Congregation"@en .
+
+
+###  https://know.dev/Consortium
+:Consortium rdf:type owl:Class ;
+            owl:equivalentClass schema:Consortium ;
+            rdfs:subClassOf :Organization ;
+            rdfs:label "Consortium"@en .
+
+
+###  https://know.dev/Corporation
+:Corporation rdf:type owl:Class ;
+             owl:equivalentClass schema:Corporation ;
+             rdfs:subClassOf :Organization ;
+             rdfs:label "Corporation"@en .
+
+
+###  https://know.dev/Death
+:Death rdf:type owl:Class ;
+       rdfs:subClassOf :Event ;
+       rdfs:label "Death"@en .
+
+
+###  https://know.dev/Event
+:Event rdf:type owl:Class ;
+       owl:equivalentClass schema:Event ;
+       rdfs:subClassOf :Thing ;
+       rdfs:label "Event"@en .
+
+
+###  https://know.dev/Family
+:Family rdf:type owl:Class ;
+        rdfs:subClassOf :Group ;
+        rdfs:label "Family"@en .
+
+
+###  https://know.dev/File
+:File rdf:type owl:Class ;
+      rdfs:subClassOf :Thing ;
+      rdfs:label "File"@en ,
+                 "Tiedosto"@fi .
+
+
+###  https://know.dev/Government
+:Government rdf:type owl:Class ;
+            rdfs:subClassOf :Organization ;
+            rdfs:label "Government"@en .
+
+
+###  https://know.dev/Graduation
+:Graduation rdf:type owl:Class ;
+            rdfs:subClassOf :Event ;
+            rdfs:label "Graduation"@en .
+
+
+###  https://know.dev/Group
+:Group rdf:type owl:Class ;
+       rdfs:subClassOf :Thing ;
+       rdfs:label "Group"@en .
+
+
+###  https://know.dev/HinduTemple
+:HinduTemple rdf:type owl:Class ;
+             owl:equivalentClass schema:HinduTemple ;
+             rdfs:subClassOf :Temple ;
+             rdfs:label "Hindu Temple"@en .
+
+
+###  https://know.dev/Holiday
+:Holiday rdf:type owl:Class ;
+         rdfs:subClassOf :Event ;
+         rdfs:label "Holiday"@en .
+
+
+###  https://know.dev/Hospital
+:Hospital rdf:type owl:Class ;
+          owl:equivalentClass schema:Hospital ;
+          rdfs:subClassOf :Place ;
+          rdfs:label "Hospital"@en .
+
+
+###  https://know.dev/Hotel
+:Hotel rdf:type owl:Class ;
+       owl:equivalentClass schema:Hotel ;
+       rdfs:subClassOf :Place ;
+       rdfs:label "Hotel"@en ,
+                  "Hotelli"@fi .
+
+
+###  https://know.dev/Landmark
+:Landmark rdf:type owl:Class ;
+          owl:equivalentClass schema:LandmarksOrHistoricalBuildings ;
+          rdfs:subClassOf :Place ;
+          rdfs:label "Landmark"@en .
+
+
+###  https://know.dev/Link
+:Link rdf:type owl:Class ;
+      rdfs:subClassOf :Thing ;
+      rdfs:label "Link"@en ,
+                 "Linkki"@fi .
+
+
+###  https://know.dev/Meeting
+:Meeting rdf:type owl:Class ;
+         rdfs:subClassOf :Event ;
+         rdfs:label "Meeting"@en .
+
+
+###  https://know.dev/Meetup
+:Meetup rdf:type owl:Class ;
+        rdfs:subClassOf :Meeting ;
+        rdfs:label "Meetup"@en .
+
+
+###  https://know.dev/Mosque
+:Mosque rdf:type owl:Class ;
+        owl:equivalentClass schema:Mosque ;
+        rdfs:subClassOf :Temple ;
+        rdfs:label "Mosque"@en .
+
+
+###  https://know.dev/Nationality
+:Nationality rdf:type owl:Class ;
+             rdfs:subClassOf :Group ;
+             rdfs:label "Nationality"@en .
+
+
+###  https://know.dev/Organization
+:Organization rdf:type owl:Class ;
+              owl:equivalentClass schema:Organization ;
+              rdfs:subClassOf :Group ;
+              rdfs:label "Organization"@en .
+
+
+###  https://know.dev/Party
+:Party rdf:type owl:Class ;
+       rdfs:subClassOf :Event ;
+       rdfs:label "Party"@en .
+
+
+###  https://know.dev/Person
+:Person rdf:type owl:Class ;
+        owl:equivalentClass schema:Person ;
+        rdfs:subClassOf :Thing ;
+        rdfs:label "Henkilö"@fi ,
+                   "Kişi"@tr ,
+                   "Person"@de ,
+                   "Person"@en ,
+                   "Person"@sv ,
+                   "Persona"@es ,
+                   "Persono"@eo ,
+                   "Pessoa"@pt ,
+                   "Особа"@uk ,
+                   "شخص"@ar .
+
+
+###  https://know.dev/Place
+:Place rdf:type owl:Class ;
+       owl:equivalentClass schema:Place ;
+       rdfs:subClassOf :Thing ;
+       rdfs:label "Place"@en .
+
+
+###  https://know.dev/Pub
+:Pub rdf:type owl:Class ;
+     owl:equivalentClass schema:BarOrPub ;
+     rdfs:subClassOf :Place ;
+     rdfs:label "Pub"@en .
+
+
+###  https://know.dev/Restaurant
+:Restaurant rdf:type owl:Class ;
+            owl:equivalentClass schema:Restaurant ;
+            rdfs:subClassOf :Place ;
+            rdfs:label "Ravintola"@fi ,
+                       "Restaurant"@en .
+
+
+###  https://know.dev/School
+:School rdf:type owl:Class ;
+        owl:equivalentClass schema:School ;
+        rdfs:subClassOf :Organization ;
+        rdfs:label "School"@en .
+
+
+###  https://know.dev/Synagogue
+:Synagogue rdf:type owl:Class ;
+           owl:equivalentClass schema:Synagogue ;
+           rdfs:subClassOf :Temple ;
+           rdfs:label "Synagogue"@en .
+
+
+###  https://know.dev/Temple
+:Temple rdf:type owl:Class ;
+        owl:equivalentClass schema:PlaceOfWorship ;
+        rdfs:subClassOf :Place ;
+        rdfs:label "Temple"@en .
+
+
+###  https://know.dev/Thing
+:Thing rdf:type owl:Class ;
+       owl:equivalentClass schema:Thing ;
+       rdfs:subClassOf owl:Thing ;
+       rdfs:label "Afero"@eo ,
+                  "Asia"@fi ,
+                  "Coisa"@pt ,
+                  "Cosa"@es ,
+                  "Ding"@de ,
+                  "Sak"@sv ,
+                  "Thing"@en ,
+                  "Şey"@tr ,
+                  "Річ"@uk ,
+                  "شيء"@ar .
+
+
+###  https://know.dev/University
+:University rdf:type owl:Class ;
+            owl:equivalentClass schema:CollegeOrUniversity ;
+            rdfs:subClassOf :Organization ;
+            rdfs:label "University"@en .
+
+
+###  https://know.dev/Venue
+:Venue rdf:type owl:Class ;
+       rdfs:subClassOf :Place ;
+       rdfs:label "Venue"@en .
+
+
+###  https://know.dev/Wedding
+:Wedding rdf:type owl:Class ;
+         rdfs:subClassOf :Event ;
+         rdfs:label "Wedding"@en .
+
+
+###  Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi
