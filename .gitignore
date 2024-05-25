@@ -9,3 +9,11 @@
 
 # Editor backup files
 *~
+
+# Build artifacts
+know.dot
+know.jsonld
+know.nq
+know.nt
+know.rdf
+know.ttl
