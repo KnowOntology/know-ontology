@@ -26,3 +26,7 @@ simplicity and developer experience in promoting AI interoperability.
 - [RDF/XML](https://github.com/KnowOntology/know-ontology/releases/download/0.1.0/know.ttl)
 - [N-Triples](https://github.com/KnowOntology/know-ontology/releases/download/0.1.0/know.nt)
 - [N-Quads](https://github.com/KnowOntology/know-ontology/releases/download/0.1.0/know.nq)
+
+## Classes
+
+![Top-level classes](doc/classes.png)
