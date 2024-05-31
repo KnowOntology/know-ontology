@@ -1,0 +1,30 @@
+# See: https://github.com/svenstaro/upload-release-action
+
+name: Release version
+
+on:
+  push:
+    tags:
+      - '*'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: Build artifacts
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Raptor RDF utilities
+        run: sudo apt-get update -yq && sudo apt-get install -yq raptor2-utils
+      - name: Build release artifacts
+        run: make all
+      - name: Attach artifacts to the release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          file: know.*
+          file_glob: true
+          overwrite: true

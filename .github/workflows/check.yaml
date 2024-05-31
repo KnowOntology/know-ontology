@@ -17,6 +17,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install Raptor RDF utilities
-        run: sudo apt update && sudo apt install raptor2-utils
+        run: sudo apt update -yq && sudo apt install -yq raptor2-utils
       - name: Run the checks
         run: make check
