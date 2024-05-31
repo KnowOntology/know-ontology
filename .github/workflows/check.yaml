@@ -1,0 +1,22 @@
+# See: https://github.com/actions/starter-workflows/blob/main/ci/makefile.yml
+
+name: Check syntax
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Raptor RDF utilities
+        run: sudo apt update && sudo apt install raptor2-utils
+      - name: Run the checks
+        run: make check
