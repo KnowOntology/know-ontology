@@ -34,3 +34,19 @@ task check: %w(src/know.ttl) do |t|
   end
   puts count
 end
+
+task classes: %w(src/know.ttl) do |t|
+  graph = RDF::Graph.load(t.prerequisites.first)
+  query = RDF::Query.new({ klass: { RDF.type => RDF::OWL.Class } }, **{})
+  query.execute(graph).map { |solution| solution.klass.path[1..] }.sort.each do |klass|
+    puts klass
+  end
+end
+
+task properties: %w(src/know.ttl) do |t|
+  graph = RDF::Graph.load(t.prerequisites.first)
+  query = RDF::Query.new({ property: { RDF.type => RDF::OWL.ObjectProperty } }, **{})
+  query.execute(graph).map { |solution| solution.property.path[1..] }.sort.each do |property|
+    puts property
+  end
+end
