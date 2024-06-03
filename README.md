@@ -22,10 +22,11 @@ simplicity and developer experience in promoting AI interoperability.
 
 ## Downloads
 
-- [Turtle](https://github.com/KnowOntology/know-ontology/releases/download/0.1.0/know.rdf)
-- [RDF/XML](https://github.com/KnowOntology/know-ontology/releases/download/0.1.0/know.ttl)
-- [N-Triples](https://github.com/KnowOntology/know-ontology/releases/download/0.1.0/know.nt)
-- [N-Quads](https://github.com/KnowOntology/know-ontology/releases/download/0.1.0/know.nq)
+- [Turtle](https://github.com/KnowOntology/know-ontology/releases/download/0.1.2/know.ttl)
+- [JSON-LD](https://github.com/KnowOntology/know-ontology/releases/download/0.1.2/know.jsonld)
+- [RDF/XML](https://github.com/KnowOntology/know-ontology/releases/download/0.1.2/know.rdf)
+- [N-Triples](https://github.com/KnowOntology/know-ontology/releases/download/0.1.2/know.nt)
+- [N-Quads](https://github.com/KnowOntology/know-ontology/releases/download/0.1.2/know.nq)
 
 ## Classes
 

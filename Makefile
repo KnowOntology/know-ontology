@@ -1,12 +1,13 @@
+BUNDLE = bundle
 RAPPER = rapper
 
-all: know.nq know.nt know.rdf know.ttl
+all: know.jsonld know.nq know.nt know.rdf know.ttl
 
 know.dot: src/know.ttl
 	$(RAPPER) -i turtle -o dot $< > $@
 
 know.jsonld: src/know.ttl
-	false  # TODO
+	$(BUNDLE) install && $(BUNDLE) exec rake -B $@
 
 know.nq: src/know.ttl
 	$(RAPPER) -i turtle -o nquads $< | sort > $@
@@ -22,6 +23,7 @@ know.ttl: src/know.ttl
 
 check: src/know.ttl
 	$(RAPPER) -i turtle -c $<
+	$(BUNDLE) install && $(BUNDLE) exec rake -B check
 
 clean:
 	@rm -f *~ know.*

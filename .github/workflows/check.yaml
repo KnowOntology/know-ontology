@@ -1,4 +1,5 @@
 # See: https://github.com/actions/starter-workflows/blob/main/ci/makefile.yml
+# See: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-ruby
 
 name: Check syntax
 
@@ -17,6 +18,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install Raptor RDF utilities
-        run: sudo apt update -yq && sudo apt install -yq raptor2-utils
+        run: sudo apt-get update -yq && sudo apt-get install -yq raptor2-utils
+      - name: Install Ruby and RDF.rb
+        uses: ruby/setup-ruby@v1
       - name: Run the checks
         run: make check
