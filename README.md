@@ -1,5 +1,7 @@
 # The KNOW Ontology
 
+https://know.dev
+
 ## Paper
 
 [KNOW: A Real-World Ontology for Knowledge Capture with Large Language Models](https://arxiv.org/abs/2405.19877)
@@ -22,11 +24,12 @@ simplicity and developer experience in promoting AI interoperability.
 
 ## Downloads
 
-- [Turtle](https://github.com/KnowOntology/know-ontology/releases/download/0.1.2/know.ttl)
-- [JSON-LD](https://github.com/KnowOntology/know-ontology/releases/download/0.1.2/know.jsonld)
-- [RDF/XML](https://github.com/KnowOntology/know-ontology/releases/download/0.1.2/know.rdf)
-- [N-Triples](https://github.com/KnowOntology/know-ontology/releases/download/0.1.2/know.nt)
-- [N-Quads](https://github.com/KnowOntology/know-ontology/releases/download/0.1.2/know.nq)
+- [Turtle](https://github.com/KnowOntology/know-ontology/releases/download/0.1.3/know.ttl)
+- [JSON-LD](https://github.com/KnowOntology/know-ontology/releases/download/0.1.3/know.jsonld)
+- [JSON Schema](https://github.com/KnowOntology/know-ontology/releases/download/0.1.3/know.schema.json)
+- [RDF/XML](https://github.com/KnowOntology/know-ontology/releases/download/0.1.3/know.rdf)
+- [N-Triples](https://github.com/KnowOntology/know-ontology/releases/download/0.1.3/know.nt)
+- [N-Quads](https://github.com/KnowOntology/know-ontology/releases/download/0.1.3/know.nq)
 
 ## Classes
 
