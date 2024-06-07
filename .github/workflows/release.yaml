@@ -23,6 +23,8 @@ jobs:
         run: sudo apt-get update -yq && sudo apt-get install -yq raptor2-utils
       - name: Install Ruby and RDF.rb
         uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
       - name: Build release artifacts
         run: make all
       - name: Attach artifacts to the release
