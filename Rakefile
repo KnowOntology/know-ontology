@@ -19,6 +19,7 @@ PREFIXES = {
 
 task default: %w(know.jsonld)
 
+desc "Generate export in JSON-LD format"
 file 'know.jsonld' => %w(src/know.ttl) do |t|
   File.open(t.name, 'w') do |output|
     JSON::LD::Writer.new(output, prefixes: PREFIXES) do |writer|
@@ -31,6 +32,7 @@ file 'know.jsonld' => %w(src/know.ttl) do |t|
   end
 end
 
+desc "Generate export in JSON Schema format"
 file 'know.schema.json' => %w(src/know.ttl) do |t|
   ontology = RDF::Graph.load(t.prerequisites.first)
   File.open(t.name, 'w') do |output|
@@ -91,6 +93,42 @@ file 'know.schema.json' => %w(src/know.ttl) do |t|
   end
 end
 
+#desc "Generate export in Avro format"
+file 'know.avdl' => %w(src/know.ttl) do |t|
+  # TODO: https://avro.apache.org/docs/1.11.1/idl-language/
+end
+
+#desc "Generate export in CDDL format"
+file 'know.cddl' => %w(src/know.ttl) do |t|
+  # TODO: https://datatracker.ietf.org/doc/html/rfc8610
+end
+
+#desc "Generate export in Amazon Ion format"
+file 'know.ion' => %w(src/know.ttl) do |t|
+  # TODO: https://en.wikipedia.org/wiki/Ion_(serialization_format)
+end
+
+#desc "Generate export in Protocol Buffers (Protobuf) format"
+file 'know.proto' => %w(src/know.ttl) do |t|
+  # TODO: https://en.wikipedia.org/wiki/Protocol_Buffers
+end
+
+#desc "Generate export in RELAX NG (RNG) format"
+file 'know.rnc' => %w(src/know.ttl) do |t|
+  # TODO: https://en.wikipedia.org/wiki/RELAX_NG
+end
+
+#desc "Generate export in XML Schema (XSD) format"
+file 'know.xsd' => %w(src/know.ttl) do |t|
+  # TODO: https://en.wikipedia.org/wiki/XML_Schema_(W3C)
+end
+
+#desc "Generate export in GraphQL SDL format"
+file 'know.graphqls' => %w(src/know.ttl) do |t|
+  # TODO: https://en.wikipedia.org/wiki/GraphQL https://graphql.org/learn/schema/
+end
+
+desc "Check for syntax errors"
 task check: %w(src/know.ttl) do |t|
   count = 0
   RDF::Reader.open(t.prerequisites.first) do |reader|
@@ -99,6 +137,7 @@ task check: %w(src/know.ttl) do |t|
   puts count
 end
 
+desc "List ontology classes"
 task classes: %w(src/know.ttl) do |t|
   ontology = RDF::Graph.load(t.prerequisites.first)
   query = RDF::Query.new({ klass: { RDF.type => RDF::OWL.Class } })
@@ -107,6 +146,7 @@ task classes: %w(src/know.ttl) do |t|
   end
 end
 
+desc "List ontology properties"
 task properties: %w(src/know.ttl) do |t|
   ontology = RDF::Graph.load(t.prerequisites.first)
   query = RDF::Query.new({ property: { RDF.type => RDF::OWL.ObjectProperty } })
