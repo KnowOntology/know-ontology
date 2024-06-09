@@ -1,3 +1,4 @@
+require 'json'
 require 'rdf'
 require 'rdf/turtle'
 
