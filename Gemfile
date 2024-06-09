@@ -4,4 +4,5 @@ gem 'rake'
 
 gem 'json-ld'
 gem 'rdf'
+gem 'rdf-trix'
 gem 'rdf-turtle'

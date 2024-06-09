@@ -1,7 +1,7 @@
 BUNDLE = bundle
 RAPPER = rapper
 
-all: know.schema.json know.jsonld know.nq know.nt know.rdf know.ttl
+all: know.jsonld know.nq know.nt know.rdf know.schema.json know.trig know.trix know.ttl
 
 know.dot: src/know.ttl
 	$(RAPPER) -i turtle -o dot $< > $@
@@ -19,6 +19,12 @@ know.rdf: src/know.ttl
 	$(RAPPER) -i turtle -o rdfxml-abbrev $< > $@
 
 know.schema.json: src/know.ttl
+	$(BUNDLE) exec rake -B $@
+
+know.trig: know.ttl
+	ln $< $@
+
+know.trix: src/know.ttl
 	$(BUNDLE) exec rake -B $@
 
 know.ttl: src/know.ttl

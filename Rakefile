@@ -1,6 +1,5 @@
 require 'rdf'
 require 'rdf/turtle'
-require 'json/ld'
 
 include RDF
 
@@ -21,6 +20,7 @@ task default: %w(know.jsonld)
 
 desc "Generate export in JSON-LD format"
 file 'know.jsonld' => %w(src/know.ttl) do |t|
+  require 'json/ld'
   File.open(t.name, 'w') do |output|
     JSON::LD::Writer.new(output, prefixes: PREFIXES) do |writer|
       RDF::Reader.open(t.prerequisites.first) do |reader|
@@ -90,6 +90,18 @@ file 'know.schema.json' => %w(src/know.ttl) do |t|
     end
 
     output.puts JSON.pretty_generate(schema)
+  end
+end
+
+desc "Generate export in TriX format"
+file 'know.trix' => %w(src/know.ttl) do |t|
+  require 'rdf/trix'
+  File.open(t.name, 'w') do |output|
+    RDF::TriX::Writer.new(output, library: :rexml, prefixes: PREFIXES) do |writer|
+      RDF::Reader.open(t.prerequisites.first) do |reader|
+        reader.each { |stmt| writer << stmt }
+      end
+    end
   end
 end
 
