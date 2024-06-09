@@ -33,6 +33,19 @@ file 'know.jsonld' => %w(src/know.ttl) do |t|
   end
 end
 
+desc "Generate export in RDF/JSON format"
+file 'know.rj' => %w(src/know.ttl) do |t|
+  require 'rdf/json'
+  File.open(t.name, 'w') do |output|
+    json = RDF::JSON::Writer.buffer(prefixes: PREFIXES) do |writer|
+      RDF::Reader.open(t.prerequisites.first) do |reader|
+        reader.each { |stmt| writer << stmt }
+      end
+    end
+    output.puts JSON.pretty_generate(JSON.parse(json))
+  end
+end
+
 desc "Generate export in JSON Schema format"
 file 'know.schema.json' => %w(src/know.ttl) do |t|
   ontology = RDF::Graph.load(t.prerequisites.first)

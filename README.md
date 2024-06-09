@@ -24,15 +24,15 @@ simplicity and developer experience in promoting AI interoperability.
 
 ## Downloads
 
-- [JSON-LD](https://github.com/KnowOntology/know-ontology/releases/download/0.1.4/know.jsonld)
-- [JSON Schema](https://github.com/KnowOntology/know-ontology/releases/download/0.1.4/know.schema.json)
-- [N-Quads](https://github.com/KnowOntology/know-ontology/releases/download/0.1.4/know.nq)
-- [N-Triples](https://github.com/KnowOntology/know-ontology/releases/download/0.1.4/know.nt)
-- [RDF/JSON](https://github.com/KnowOntology/know-ontology/releases/download/0.1.4/know.rj)
-- [RDF/XML](https://github.com/KnowOntology/know-ontology/releases/download/0.1.4/know.rdf)
-- [TriG](https://github.com/KnowOntology/know-ontology/releases/download/0.1.4/know.trig)
-- [TriX](https://github.com/KnowOntology/know-ontology/releases/download/0.1.4/know.trix)
-- [Turtle](https://github.com/KnowOntology/know-ontology/releases/download/0.1.4/know.ttl)
+- [JSON-LD](https://github.com/KnowOntology/know-ontology/releases/latest/download/know.jsonld)
+- [JSON Schema](https://github.com/KnowOntology/know-ontology/releases/latest/download/know.schema.json)
+- [N-Quads](https://github.com/KnowOntology/know-ontology/releases/latest/download/know.nq)
+- [N-Triples](https://github.com/KnowOntology/know-ontology/releases/latest/download/know.nt)
+- [RDF/JSON](https://github.com/KnowOntology/know-ontology/releases/latest/download/know.rj)
+- [RDF/XML](https://github.com/KnowOntology/know-ontology/releases/latest/download/know.rdf)
+- [TriG](https://github.com/KnowOntology/know-ontology/releases/latest/download/know.trig)
+- [TriX](https://github.com/KnowOntology/know-ontology/releases/latest/download/know.trix)
+- [Turtle](https://github.com/KnowOntology/know-ontology/releases/latest/download/know.ttl)
 
 ## Classes
 
