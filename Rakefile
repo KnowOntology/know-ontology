@@ -109,9 +109,10 @@ end
 
 desc "Generate export in TriX format"
 file 'know.trix' => %w(src/know.ttl) do |t|
+  require 'nokogiri'
   require 'rdf/trix'
   File.open(t.name, 'w') do |output|
-    RDF::TriX::Writer.new(output, library: :rexml, prefixes: PREFIXES) do |writer|
+    RDF::TriX::Writer.new(output, library: :nokogiri, prefixes: PREFIXES) do |writer|
       RDF::Reader.open(t.prerequisites.first) do |reader|
         reader.each { |stmt| writer << stmt }
       end
@@ -156,11 +157,11 @@ end
 
 desc "Check for syntax errors"
 task check: %w(src/know.ttl) do |t|
-  count = 0
-  RDF::Reader.open(t.prerequisites.first) do |reader|
-    reader.each { |stmt| count += 1 }
-  end
-  puts count
+  require 'json/ld'
+  require 'nokogiri'
+  require 'rdf/json'
+  require 'rdf/trix'
+  puts RDF::Reader.open(t.prerequisites.first).count
 end
 
 desc "List ontology classes"
