@@ -33,6 +33,7 @@ simplicity and developer experience in promoting AI interoperability.
 - [TriG](https://github.com/KnowOntology/know-ontology/releases/latest/download/know.trig)
 - [TriX](https://github.com/KnowOntology/know-ontology/releases/latest/download/know.trix)
 - [Turtle](https://github.com/KnowOntology/know-ontology/releases/latest/download/know.ttl)
+- [XML Schema](https://github.com/KnowOntology/know-ontology/releases/latest/download/know.xsd)
 
 ## Classes
 

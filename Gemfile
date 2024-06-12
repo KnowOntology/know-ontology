@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 gem 'rake'
 
+gem 'activesupport'
 gem 'json-ld'
 gem 'nokogiri'
 gem 'rdf'

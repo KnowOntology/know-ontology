@@ -1,7 +1,9 @@
+require 'active_support'
 require 'json'
 require 'rdf'
 require 'rdf/turtle'
 
+include ActiveSupport::Inflector
 include RDF
 
 KNOW = RDF::Vocabulary.new('https://know.dev/')
@@ -57,14 +59,14 @@ file 'know.schema.json' => %w(src/know.ttl) do |t|
       '$defs': {},
     }
 
-    query = RDF::Query.new({ klass: { RDF.type => RDF::OWL.Class } })
+    query = RDF::Query.new({ klass: { RDF.type => OWL.Class } })
     query.execute(ontology).each do |solution|
       klass_name = solution.klass.path[1..]
       klass_label = ontology.query([solution.klass, RDFS.label]).objects.find { |o| o.language == :en }
 
       properties = RDF::Query.new({
         property: {
-          RDF.type => RDF::OWL.FunctionalProperty,
+          RDF.type => OWL.FunctionalProperty,
           RDFS.domain => solution.klass,
         },
       }).execute(ontology)
@@ -145,9 +147,85 @@ file 'know.rnc' => %w(src/know.ttl) do |t|
   # TODO: https://en.wikipedia.org/wiki/RELAX_NG
 end
 
-#desc "Generate export in XML Schema (XSD) format"
+# See: https://en.wikipedia.org/wiki/XML_Schema_(W3C)
+desc "Generate export in XML Schema (XSD) format"
 file 'know.xsd' => %w(src/know.ttl) do |t|
-  # TODO: https://en.wikipedia.org/wiki/XML_Schema_(W3C)
+  require 'nokogiri'
+
+  $ontology = RDF::Graph.load(t.prerequisites.first)
+
+  def make_properties(xml, klass)
+    properties = RDF::Query.new({
+      property: {
+        RDFS.domain => klass,
+        RDF.type => OWL.ObjectProperty,
+      },
+    }).execute($ontology)
+
+    return if properties.empty?
+
+    xml[:xs].choice(minOccurs: 0, maxOccurs: :unbounded) do
+      properties = properties.each.with_index do |solution, property_index|
+        property_ranges = $ontology.query([solution.property, RDFS.range]).objects
+        next if property_ranges.empty?
+
+        property_name = solution.property.path[1..]
+        property_label = $ontology.query([solution.property, RDFS.label]).objects.find { |o| o.language == :en }
+        property_type = property_ranges.first.qname(prefixes: PREFIXES).last
+        property_functional = !$ontology.query([solution.property, RDF.type, OWL.FunctionalProperty]).nil?
+        property_occurs = property_functional ? 1 : :unbounded
+
+        xml[:xs].element(name: property_name, type: property_type, minOccurs: 0, maxOccurs: property_occurs)
+      end
+    end
+  end
+
+  xml_builder = Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
+    xml[:xs].schema('xmlns' => KNOW.to_s,
+                    'xmlns:xs' => 'http://www.w3.org/2001/XMLSchema',
+                    'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
+                    'xsi:schemaLocation' => 'http://www.w3.org/2001/XMLSchema http://www.w3.org/2001/XMLSchema.xsd',
+                    targetNamespace: KNOW.to_s,
+                    elementFormDefault: 'qualified') do
+
+      klasses = ontology_classes()
+
+      klasses.each do |klass_name, _|
+        singular = dasherize(underscore(klass_name))
+        plural = pluralize(singular)
+
+        xml[:xs].element(name: singular, type: klass_name)
+        xml[:xs].element(name: plural) do
+          xml[:xs].complexType do
+            xml[:xs].sequence do
+              xml[:xs].element(ref: singular)
+            end
+          end
+        end
+      end
+
+      klasses.each do |klass_name, parent_name|
+        klass = KNOW.send(klass_name)
+        klass_label = $ontology.query([klass, RDFS.label]).objects.find { |o| o.language == :en }
+
+        xml[:xs].complexType(name: klass_name) do
+          if klass_name == 'Thing'
+            make_properties(xml, klass)
+          else
+            xml[:xs].complexContent do
+              xml[:xs].extension(base: parent_name) do
+                make_properties(xml, klass)
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+
+  File.open(t.name, 'w') do |output|
+    output.puts xml_builder.to_xml
+  end
 end
 
 #desc "Generate export in GraphQL SDL format"
@@ -166,18 +244,29 @@ end
 
 desc "List ontology classes"
 task classes: %w(src/know.ttl) do |t|
-  ontology = RDF::Graph.load(t.prerequisites.first)
-  query = RDF::Query.new({ klass: { RDF.type => RDF::OWL.Class } })
-  query.execute(ontology).map { |solution| solution.klass.path[1..] }.sort.each do |klass|
+  $ontology = RDF::Graph.load(t.prerequisites.first)
+  query = RDF::Query.new({ klass: { RDF.type => OWL.Class } })
+  query.execute($ontology).map { |solution| solution.klass.path[1..] }.sort.each do |klass|
     puts klass
   end
 end
 
 desc "List ontology properties"
 task properties: %w(src/know.ttl) do |t|
-  ontology = RDF::Graph.load(t.prerequisites.first)
-  query = RDF::Query.new({ property: { RDF.type => RDF::OWL.ObjectProperty } })
-  query.execute(ontology).map { |solution| solution.property.path[1..] }.sort.each do |property|
+  $ontology = RDF::Graph.load(t.prerequisites.first)
+  query = RDF::Query.new({ property: { RDF.type => OWL.ObjectProperty } })
+  query.execute($ontology).map { |solution| solution.property.path[1..] }.sort.each do |property|
     puts property
   end
+end
+
+def ontology_classes
+  result = {}
+  query = RDF::Query.new({ klass: { RDF.type => OWL.Class, RDFS.subClassOf => :parent } })
+  query.execute($ontology).each do |solution|
+    klass_name = solution.klass.path[1..]
+    parent_name = solution.parent.qname(prefixes: PREFIXES).last
+    result[klass_name] = parent_name
+  end
+  result
 end
