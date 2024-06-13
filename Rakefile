@@ -235,6 +235,7 @@ end
 
 desc "Check for syntax errors"
 task check: %w(src/know.ttl) do |t|
+  require 'active_support'
   require 'json/ld'
   require 'nokogiri'
   require 'rdf/json'
@@ -245,18 +246,50 @@ end
 desc "List ontology classes"
 task classes: %w(src/know.ttl) do |t|
   $ontology = RDF::Graph.load(t.prerequisites.first)
-  query = RDF::Query.new({ klass: { RDF.type => OWL.Class } })
-  query.execute($ontology).map { |solution| solution.klass.path[1..] }.sort.each do |klass|
-    puts klass
+  ontology_classes.keys.sort.each do |klass|
+    if ENV['JSON']
+      puts "\"#{klass}\","
+    else
+      puts klass
+    end
   end
 end
 
 desc "List ontology properties"
 task properties: %w(src/know.ttl) do |t|
   $ontology = RDF::Graph.load(t.prerequisites.first)
-  query = RDF::Query.new({ property: { RDF.type => OWL.ObjectProperty } })
-  query.execute($ontology).map { |solution| solution.property.path[1..] }.sort.each do |property|
-    puts property
+  (ontology_relations + ontology_properties).sort.each do |property|
+    if ENV['JSON']
+      puts "\"#{property}\","
+    else
+      puts property
+    end
+  end
+end
+
+task :website => %w(src/know.ttl) do |t|
+  $ontology = RDF::Graph.load(t.prerequisites.first)
+
+  ontology_classes.each do |klass, parent|
+    sh "touch ../know-website/doc/#{klass}.md" || abort
+  end
+
+  ontology_relations.each do |property|
+    sh "touch ../know-website/doc/#{property}.md" || abort
+  end
+
+  ontology_properties.each do |property|
+    sh "touch ../know-website/doc/#{property}.md" || abort
+    File.open("../know-website/doc/#{property}.md", 'w') do |out|
+      out.puts <<~EOF
+        # #{property}
+
+        :::note
+        https://know.dev/#{property}
+        (`know:#{property}`)
+        :::
+      EOF
+    end
   end
 end
 
@@ -264,9 +297,29 @@ def ontology_classes
   result = {}
   query = RDF::Query.new({ klass: { RDF.type => OWL.Class, RDFS.subClassOf => :parent } })
   query.execute($ontology).each do |solution|
-    klass_name = solution.klass.path[1..]
+    klass_name = solution.klass.qname(prefixes: PREFIXES).last
     parent_name = solution.parent.qname(prefixes: PREFIXES).last
     result[klass_name] = parent_name
   end
   result
+end
+
+def ontology_relations
+  result = {}
+  query = RDF::Query.new({ property: { RDF.type => OWL.ObjectProperty } })
+  query.execute($ontology).each do |solution|
+    property_name = solution.property.qname(prefixes: PREFIXES).last
+    result[property_name] = true
+  end
+  result.keys.sort
+end
+
+def ontology_properties
+  result = {}
+  query = RDF::Query.new({ property: { RDF.type => OWL.DatatypeProperty } })
+  query.execute($ontology).each do |solution|
+    property_name = solution.property.qname(prefixes: PREFIXES).last
+    result[property_name] = true
+  end
+  result.keys.sort
 end
