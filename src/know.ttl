@@ -47,6 +47,7 @@
 ###  https://know.dev/birth
 :birth rdf:type owl:ObjectProperty ;
        rdfs:subPropertyOf owl:topObjectProperty ;
+       rdf:type owl:FunctionalProperty ;
        rdfs:domain :Person ;
        rdfs:range :Birth ;
        rdfs:label "Birth"@en ,
@@ -110,6 +111,7 @@
 ###  https://know.dev/death
 :death rdf:type owl:ObjectProperty ;
        rdfs:subPropertyOf owl:topObjectProperty ;
+       rdf:type owl:FunctionalProperty ;
        rdfs:domain :Person ;
        rdfs:range :Death ;
        rdfs:label "Death"@en ,
