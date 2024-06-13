@@ -6,6 +6,8 @@ require 'rdf/turtle'
 include ActiveSupport::Inflector
 include RDF
 
+LANG = :en
+
 KNOW = RDF::Vocabulary.new('https://know.dev/')
 
 PREFIXES = {
@@ -50,7 +52,20 @@ end
 
 desc "Generate export in JSON Schema format"
 file 'know.schema.json' => %w(src/know.ttl) do |t|
-  ontology = RDF::Graph.load(t.prerequisites.first)
+  $ontology = RDF::Graph.load(t.prerequisites.first)
+
+  def js_type(property_type)
+    case property_type
+      when Array then property_type.map { |t| js_type(t) }
+      when XSD.anyURI then { type: :string, format: :iri }
+      when XSD.dateTime then { type: :string, format: :'date-time' }
+      when XSD.language then { type: :string }
+      when XSD.nonNegativeInteger then { type: :number, minimum: 0 }
+      when XSD.string then { type: :string }
+      else { '$ref': "#/$defs#{property_type.path}" }
+    end
+  end
+
   File.open(t.name, 'w') do |output|
     schema = {
       '$id': 'https://know.dev/know.schema.json',
@@ -59,49 +74,39 @@ file 'know.schema.json' => %w(src/know.ttl) do |t|
       '$defs': {},
     }
 
-    query = RDF::Query.new({ klass: { RDF.type => OWL.Class } })
-    query.execute(ontology).each do |solution|
-      klass_name = solution.klass.path[1..]
-      klass_label = ontology.query([solution.klass, RDFS.label]).objects.find { |o| o.language == :en }
-
-      properties = RDF::Query.new({
-        property: {
-          RDF.type => OWL.FunctionalProperty,
-          RDFS.domain => solution.klass,
-        },
-      }).execute(ontology)
-
-      properties = properties.map do |solution|
-        property_name = solution.property.path[1..]
-        property_label = ontology.query([solution.property, RDFS.label]).objects.find { |o| o.language == :en }
-        property_ranges = ontology.query([solution.property, RDFS.range]).objects
-        next if property_ranges.empty?
-        property_types = property_ranges.map do |property_range|
-          case property_range
-            when XSD.anyURI then [:string, :iri]
-            when XSD.dateTime then [:string, :'date-time']
-            when XSD.nonNegativeInteger then [:number, nil]
-            when XSD.string then [:string, nil]
-            else [{ '$ref': "#/$defs#{property_range.path}" }, nil]
-          end
-        end
-        property_types.compact!
-        property = {
-          name: property_name,
-          title: property_label,
-          type: property_types.size == 1 ? property_types.first[0] : property_types.map(&:first),
-          format: property_types.size == 1 ? property_types.first[1] : nil,
-          minimum: property_ranges.include?(XSD.nonNegativeInteger) ? 0 : nil,
-        }.compact
-      end
-      properties.compact!
+    ontology_classes.each do |klass_name, _|
+      klass = KNOW.send(klass_name)
+      klass_label = $ontology.query([klass, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
+      klass_props = ontology_relations(klass_name).merge(ontology_properties(klass_name))
 
       schema[:'$defs'][klass_name] = {
         '$anchor': klass_name,
         title: klass_label,
         type: :object,
-        #required: [],
-        properties: properties,
+        properties: klass_props.keys.sort.inject({}) do |properties, property_name|
+          property = KNOW.send(property_name)
+          property_label = $ontology.query([property, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
+          property_ranges = $ontology.query([property, RDFS.range]).objects
+          property_range = property_ranges.first || XSD.string
+
+          instance_count = klass_props[property_name]
+          if instance_count.end == 1 then
+            properties[property_name] = {
+              name: property_name,
+              title: property_label,
+            }.merge(js_type(property_range)).compact
+          else
+            property_name = pluralize(property_name)
+            properties[property_name] = {
+              name: property_name,
+              title: pluralize(property_label),
+              type: :array,
+              items: js_type(property_range),
+            }.compact
+          end
+
+          properties
+        end
       }
     end
 
@@ -170,7 +175,7 @@ file 'know.xsd' => %w(src/know.ttl) do |t|
         next if property_ranges.empty?
 
         property_name = solution.property.path[1..]
-        property_label = $ontology.query([solution.property, RDFS.label]).objects.find { |o| o.language == :en }
+        property_label = $ontology.query([solution.property, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
         property_type = property_ranges.first.qname(prefixes: PREFIXES).last
         property_functional = !$ontology.query([solution.property, RDF.type, OWL.FunctionalProperty]).nil?
         property_occurs = property_functional ? 1 : :unbounded
@@ -206,7 +211,7 @@ file 'know.xsd' => %w(src/know.ttl) do |t|
 
       klasses.each do |klass_name, parent_name|
         klass = KNOW.send(klass_name)
-        klass_label = $ontology.query([klass, RDFS.label]).objects.find { |o| o.language == :en }
+        klass_label = $ontology.query([klass, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
 
         xml[:xs].complexType(name: klass_name) do
           if klass_name == 'Thing'
@@ -258,7 +263,7 @@ end
 desc "List ontology properties"
 task properties: %w(src/know.ttl) do |t|
   $ontology = RDF::Graph.load(t.prerequisites.first)
-  (ontology_relations + ontology_properties).sort.each do |property|
+  ontology_relations.merge(ontology_properties).keys.sort.each do |property|
     if ENV['JSON']
       puts "\"#{property}\","
     else
@@ -274,11 +279,11 @@ task :website => %w(src/know.ttl) do |t|
     sh "touch ../know-website/doc/#{klass}.md" || abort
   end
 
-  ontology_relations.each do |property|
+  ontology_relations.each do |property, _|
     sh "touch ../know-website/doc/#{property}.md" || abort
   end
 
-  ontology_properties.each do |property|
+  ontology_properties.each do |property, _|
     sh "touch ../know-website/doc/#{property}.md" || abort
     File.open("../know-website/doc/#{property}.md", 'w') do |out|
       out.puts <<~EOF
@@ -304,22 +309,28 @@ def ontology_classes
   result
 end
 
-def ontology_relations
+def ontology_relations(klass_name = nil)
   result = {}
-  query = RDF::Query.new({ property: { RDF.type => OWL.ObjectProperty } })
+  filter = klass_name ? { RDFS.domain => KNOW.send(klass_name) } : {}
+  query = RDF::Query.new({ property: { RDF.type => OWL.ObjectProperty }.merge(filter) })
   query.execute($ontology).each do |solution|
-    property_name = solution.property.qname(prefixes: PREFIXES).last
-    result[property_name] = true
+    property = solution.property
+    property_name = property.qname(prefixes: PREFIXES).last
+    property_functional = !$ontology.query([property, RDF.type, OWL.FunctionalProperty]).nil?
+    result[property_name] = (0..(property_functional ? 1 : nil))
   end
-  result.keys.sort
+  result
 end
 
-def ontology_properties
+def ontology_properties(klass_name = nil)
   result = {}
-  query = RDF::Query.new({ property: { RDF.type => OWL.DatatypeProperty } })
+  filter = klass_name ? { RDFS.domain => KNOW.send(klass_name) } : {}
+  query = RDF::Query.new({ property: { RDF.type => OWL.DatatypeProperty }.merge(filter) })
   query.execute($ontology).each do |solution|
-    property_name = solution.property.qname(prefixes: PREFIXES).last
-    result[property_name] = true
+    property = solution.property
+    property_name = property.qname(prefixes: PREFIXES).last
+    property_functional = !$ontology.query([property, RDF.type, OWL.FunctionalProperty]).nil?
+    result[property_name] = (0..(property_functional ? 1 : nil))
   end
-  result.keys.sort
+  result
 end
