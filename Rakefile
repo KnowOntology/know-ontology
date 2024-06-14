@@ -6,6 +6,10 @@ require 'rdf/turtle'
 include ActiveSupport::Inflector
 include RDF
 
+ActiveSupport::Inflector.inflections(:en) do |inflect|
+  inflect.irregular 'cafe', 'cafes'
+end
+
 LANG = :en
 
 KNOW = RDF::Vocabulary.new('https://know.dev/')
@@ -75,9 +79,9 @@ file 'know.schema.json' => %w(src/know.ttl) do |t|
     }
 
     ontology_classes.each do |klass_name, parent_name|
-      klass = KNOW.send(klass_name)
+      klass = KNOW[klass_name]
       klass_label = $ontology.query([klass, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
-      klass_props = ontology_relations(klass_name).merge(ontology_properties(klass_name))
+      klass_props = ontology_relations(klass).merge(ontology_properties(klass))
 
       schema[:'$defs'][klass_name] = {
         '$anchor': klass_name,
@@ -85,7 +89,7 @@ file 'know.schema.json' => %w(src/know.ttl) do |t|
         type: :object,
         allOf: klass_name == :Thing ? [] : [{ '$ref': "#/$defs/#{parent_name}" }],
         properties: klass_props.keys.sort.inject({}) do |properties, property_name|
-          property = KNOW.send(property_name)
+          property = KNOW[property_name]
           property_label = $ontology.query([property, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
           property_ranges = $ontology.query([property, RDFS.range]).objects
           property_range = property_ranges.first || XSD.string
@@ -161,26 +165,29 @@ file 'know.xsd' => %w(src/know.ttl) do |t|
 
   $ontology = RDF::Graph.load(t.prerequisites.first)
 
-  def make_properties(xml, klass)
-    properties = RDF::Query.new({
-      property: {
-        RDFS.domain => klass,
-        RDF.type => OWL.ObjectProperty,
-      },
-    }).execute($ontology)
+  def xsd_type(property_type)
+    return 'xs:anySimpleType' if property_type.nil?
+    curie = property_type.qname(prefixes: PREFIXES)
+    case curie.first
+      when :know then curie.last
+      when :xsd then "xs:#{curie.last}"
+      else raise "unknown property type: #{property_type.inspect}"
+    end
+  end
 
-    return if properties.empty?
+  def emit_properties(xml, klass)
+    klass_props = ontology_relations(klass).merge(ontology_properties(klass))
+    return if klass_props.empty?
 
     xml[:xs].choice(minOccurs: 0, maxOccurs: :unbounded) do
-      properties = properties.each.with_index do |solution, property_index|
-        property_ranges = $ontology.query([solution.property, RDFS.range]).objects
-        next if property_ranges.empty?
+      klass_props.keys.sort.each.with_index do |property_name, property_index|
+        property = KNOW[property_name]
+        property_label = $ontology.query([property, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
+        property_ranges = $ontology.query([property, RDFS.range]).objects
+        property_type = xsd_type(property_ranges.first)
 
-        property_name = solution.property.path[1..]
-        property_label = $ontology.query([solution.property, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
-        property_type = property_ranges.first.qname(prefixes: PREFIXES).last
-        property_functional = !$ontology.query([solution.property, RDF.type, OWL.FunctionalProperty]).nil?
-        property_occurs = property_functional ? 1 : :unbounded
+        instance_count = klass_props[property_name]
+        property_occurs = instance_count.end || :unbounded
 
         xml[:xs].element(name: property_name, type: property_type, minOccurs: 0, maxOccurs: property_occurs)
       end
@@ -188,16 +195,14 @@ file 'know.xsd' => %w(src/know.ttl) do |t|
   end
 
   xml_builder = Nokogiri::XML::Builder.new(encoding: 'UTF-8') do |xml|
-    xml[:xs].schema('xmlns' => KNOW.to_s,
+    xml[:xs].schema(xmlns: KNOW.to_s,
                     'xmlns:xs' => 'http://www.w3.org/2001/XMLSchema',
                     'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
                     'xsi:schemaLocation' => 'http://www.w3.org/2001/XMLSchema http://www.w3.org/2001/XMLSchema.xsd',
                     targetNamespace: KNOW.to_s,
                     elementFormDefault: 'qualified') do
 
-      klasses = ontology_classes()
-
-      klasses.each do |klass_name, _|
+      ontology_classes.each do |klass_name, _|
         singular = dasherize(underscore(klass_name))
         plural = pluralize(singular)
 
@@ -205,23 +210,23 @@ file 'know.xsd' => %w(src/know.ttl) do |t|
         xml[:xs].element(name: plural) do
           xml[:xs].complexType do
             xml[:xs].sequence do
-              xml[:xs].element(ref: singular)
+              xml[:xs].element(ref: singular, minOccurs: 0, maxOccurs: :unbounded)
             end
           end
         end
       end
 
-      klasses.each do |klass_name, parent_name|
-        klass = KNOW.send(klass_name)
+      ontology_classes.each do |klass_name, parent_name|
+        klass = KNOW[klass_name]
         klass_label = $ontology.query([klass, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
 
         xml[:xs].complexType(name: klass_name) do
           if klass_name == 'Thing'
-            make_properties(xml, klass)
+            emit_properties(xml, klass)
           else
             xml[:xs].complexContent do
               xml[:xs].extension(base: parent_name) do
-                make_properties(xml, klass)
+                emit_properties(xml, klass)
               end
             end
           end
@@ -311,9 +316,9 @@ def ontology_classes
   result
 end
 
-def ontology_relations(klass_name = nil)
+def ontology_relations(klass = nil)
   result = {}
-  filter = klass_name ? { RDFS.domain => KNOW.send(klass_name) } : {}
+  filter = klass ? { RDFS.domain => klass } : {}
   query = RDF::Query.new({ property: { RDF.type => OWL.ObjectProperty }.merge(filter) })
   query.execute($ontology).each do |solution|
     property = solution.property
@@ -324,9 +329,9 @@ def ontology_relations(klass_name = nil)
   result
 end
 
-def ontology_properties(klass_name = nil)
+def ontology_properties(klass = nil)
   result = {}
-  filter = klass_name ? { RDFS.domain => KNOW.send(klass_name) } : {}
+  filter = klass ? { RDFS.domain => klass } : {}
   query = RDF::Query.new({ property: { RDF.type => OWL.DatatypeProperty }.merge(filter) })
   query.execute($ontology).each do |solution|
     property = solution.property
