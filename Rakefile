@@ -74,7 +74,7 @@ file 'know.schema.json' => %w(src/know.ttl) do |t|
       '$defs': {},
     }
 
-    ontology_classes.each do |klass_name, _|
+    ontology_classes.each do |klass_name, parent_name|
       klass = KNOW.send(klass_name)
       klass_label = $ontology.query([klass, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
       klass_props = ontology_relations(klass_name).merge(ontology_properties(klass_name))
@@ -83,19 +83,20 @@ file 'know.schema.json' => %w(src/know.ttl) do |t|
         '$anchor': klass_name,
         title: klass_label,
         type: :object,
+        allOf: klass_name == :Thing ? [] : [{ '$ref': "#/$defs/#{parent_name}" }],
         properties: klass_props.keys.sort.inject({}) do |properties, property_name|
           property = KNOW.send(property_name)
           property_label = $ontology.query([property, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
           property_ranges = $ontology.query([property, RDFS.range]).objects
           property_range = property_ranges.first || XSD.string
 
+          properties[property_name] = {
+            name: property_name,
+            title: property_label,
+          }.merge(js_type(property_range)).compact
+
           instance_count = klass_props[property_name]
-          if instance_count.end == 1 then
-            properties[property_name] = {
-              name: property_name,
-              title: property_label,
-            }.merge(js_type(property_range)).compact
-          else
+          if instance_count.end.nil? then
             property_name = pluralize(property_name)
             properties[property_name] = {
               name: property_name,
@@ -108,6 +109,7 @@ file 'know.schema.json' => %w(src/know.ttl) do |t|
           properties
         end
       }
+      schema[:'$defs'][klass_name].delete(:allOf) if schema[:'$defs'][klass_name][:allOf].empty?
     end
 
     output.puts JSON.pretty_generate(schema)
