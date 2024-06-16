@@ -30,6 +30,7 @@
                    owl:IrreflexiveProperty ;
           rdfs:domain :Person ;
           rdfs:range :Person ;
+          :glyph "🧑‍🌾" ;
           rdfs:label "Ancestor"@en ,
                      "Esivanhempi"@fi .
 
@@ -555,6 +556,16 @@ dcterms:identifier owl:equivalentProperty :id .
      rdfs:label "End"@en ,
                 "Loppu"@fi ,
                 "Slutet"@sv .
+
+
+###  https://know.dev/glyph
+:glyph rdf:type owl:DatatypeProperty ;
+         rdfs:subPropertyOf owl:topObjectProperty ;
+         rdf:type owl:FunctionalProperty ;
+         rdfs:domain :Thing ;
+         rdfs:range xsd:string ;
+         rdfs:label "Glyfi"@fi ,
+                    "Glyph"@en .
 
 
 ###  https://know.dev/honorific
