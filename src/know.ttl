@@ -30,9 +30,9 @@
                    owl:IrreflexiveProperty ;
           rdfs:domain :Person ;
           rdfs:range :Person ;
-          :glyph "🧑‍🌾" ;
           rdfs:label "Ancestor"@en ,
-                     "Esivanhempi"@fi .
+                     "Esivanhempi"@fi ;
+          :glyph "🧑‍🌾" .
 
 
 ###  https://know.dev/aunt
@@ -42,7 +42,8 @@
       rdfs:domain :Person ;
       rdfs:range :Person ;
       rdfs:label "Aunt"@en ,
-                 "Täti"@fi .
+                 "Täti"@fi ;
+      :glyph "👩" .
 
 
 ###  https://know.dev/birth
@@ -53,7 +54,8 @@
        rdfs:range :Birth ;
        rdfs:label "Birth"@en ,
                   "Födelse"@sv ,
-                  "Syntymä"@fi .
+                  "Syntymä"@fi ;
+       :glyph "👩‍🍼" .
 
 
 ###  https://know.dev/brother
@@ -62,7 +64,8 @@
          rdfs:domain :Person ;
          rdfs:range :Person ;
          rdfs:label "Brother"@en ,
-                    "Veli"@fi .
+                    "Veli"@fi ;
+         :glyph "👦" .
 
 
 ###  https://know.dev/child
@@ -75,7 +78,8 @@
        rdfs:range :Person ;
        owl:propertyDisjointWith :parent ;
        rdfs:label "Child"@en ,
-                  "Lapsi"@fi .
+                  "Lapsi"@fi ;
+       :glyph "🧒" .
 
 
 ###  https://know.dev/colleague
@@ -86,7 +90,8 @@
            rdfs:domain :Person ;
            rdfs:range :Person ;
            rdfs:label "Colleague"@en ,
-                      "Kollega"@fi .
+                      "Kollega"@fi ;
+           :glyph "🧑‍💼" .
 
 
 ###  https://know.dev/cousin
@@ -96,7 +101,8 @@
         rdfs:domain :Person ;
         rdfs:range :Person ;
         rdfs:label "Cousin"@en ,
-                   "Serkku"@fi .
+                   "Serkku"@fi ;
+        :glyph "🧒" .
 
 
 ###  https://know.dev/daughter
@@ -106,7 +112,8 @@
           rdfs:domain :Person ;
           rdfs:range :Person ;
           rdfs:label "Daughter"@en ,
-                     "Tytär"@fi .
+                     "Tytär"@fi ;
+          :glyph "👧" .
 
 
 ###  https://know.dev/death
@@ -117,7 +124,8 @@
        rdfs:range :Death ;
        rdfs:label "Death"@en ,
                   "Död"@sv ,
-                  "Kuolema"@fi .
+                  "Kuolema"@fi ;
+       :glyph "⚰️" .
 
 
 ###  https://know.dev/descendant
@@ -129,7 +137,8 @@
             rdfs:domain :Person ;
             rdfs:range :Person ;
             rdfs:label "Descendant"@en ,
-                       "Jälkeläinen"@fi .
+                       "Jälkeläinen"@fi ;
+            :glyph "🧒" .
 
 
 ###  https://know.dev/father
@@ -141,7 +150,8 @@
         rdfs:domain :Person ;
         rdfs:range :Person ;
         rdfs:label "Father"@en ,
-                   "Isä"@fi .
+                   "Isä"@fi ;
+        :glyph "👨" .
 
 
 ###  https://know.dev/grandchild
@@ -156,7 +166,8 @@
                                      :child
                                    ) ;
             rdfs:label "Grandchild"@en ,
-                       "Lapsenlapsi"@fi .
+                       "Lapsenlapsi"@fi ;
+            :glyph "🧒" .
 
 
 ###  https://know.dev/granddaughter
@@ -166,7 +177,8 @@
                rdfs:domain :Person ;
                rdfs:range :Person ;
                rdfs:label "Granddaughter"@en ,
-                          "Lapsentytär"@fi .
+                          "Lapsentytär"@fi ;
+               :glyph "👧" .
 
 
 ###  https://know.dev/grandfather
@@ -176,7 +188,8 @@
              rdfs:domain :Person ;
              rdfs:range :Person ;
              rdfs:label "Grandfather"@en ,
-                        "Isoisä"@fi .
+                        "Isoisä"@fi ;
+             :glyph "👴" .
 
 
 ###  https://know.dev/grandmother
@@ -186,7 +199,8 @@
              rdfs:domain :Person ;
              rdfs:range :Person ;
              rdfs:label "Grandmother"@en ,
-                        "Isoäiti"@fi .
+                        "Isoäiti"@fi ;
+             :glyph "👵" .
 
 
 ###  https://know.dev/grandparent
@@ -200,7 +214,8 @@
                                       :parent
                                     ) ;
              rdfs:label "Grandparent"@en ,
-                        "Isovanhempi"@fi .
+                        "Isovanhempi"@fi ;
+             :glyph "🧓" .
 
 
 ###  https://know.dev/grandson
@@ -210,7 +225,8 @@
           rdfs:domain :Person ;
           rdfs:range :Person ;
           rdfs:label "Grandson"@en ,
-                     "Lapsenpoika"@fi .
+                     "Lapsenpoika"@fi ;
+          :glyph "🧒" .
 
 
 ###  https://know.dev/husband
@@ -220,7 +236,8 @@
          rdfs:domain :Person ;
          rdfs:range :Person ;
          rdfs:label "Aviomies"@fi ,
-                    "Husband"@en .
+                    "Husband"@en ;
+         :glyph "👨" .
 
 
 ###  https://know.dev/knows
@@ -232,7 +249,8 @@
        rdfs:range :Person ;
        rdfs:label "Knows"@en ,
                   "Känner"@sv ,
-                  "Tuntee"@fi .
+                  "Tuntee"@fi ;
+       :glyph "🤝" .
 
 
 ###  https://know.dev/link
@@ -242,7 +260,8 @@
       rdfs:range :Link ;
       rdfs:label "Link"@en ,
                  "Linkki"@fi ,
-                 "Länk"@sv .
+                 "Länk"@sv ;
+      :glyph "🔗" .
 
 
 ###  https://know.dev/member
@@ -253,7 +272,8 @@
         rdfs:range :Person ;
         rdfs:label "Jäsen"@fi ,
                    "Medlem"@sv ,
-                   "Member"@en .
+                   "Member"@en ;
+        :glyph "🧑‍🤝‍🧑" .
 
 
 ###  https://know.dev/memberOf
@@ -265,7 +285,8 @@
           rdfs:range :Group ;
           rdfs:label "Jäsenyys"@fi ,
                      "Medlemskap"@sv ,
-                     "Member Of"@en .
+                     "Member Of"@en ;
+          :glyph "🎗️" .
 
 
 ###  https://know.dev/mother
@@ -277,7 +298,8 @@
         rdfs:domain :Person ;
         rdfs:range :Person ;
         rdfs:label "Mother"@en ,
-                   "Äiti"@fi .
+                   "Äiti"@fi ;
+        :glyph "👩" .
 
 
 ###  https://know.dev/nephew
@@ -287,7 +309,8 @@
         rdfs:domain :Person ;
         rdfs:range :Person ;
         rdfs:label "Nephew"@en ,
-                   "Sisarenpoika"@fi .
+                   "Sisarenpoika"@fi ;
+        :glyph "👦" .
 
 
 ###  https://know.dev/nibling
@@ -298,7 +321,8 @@
          rdfs:domain :Person ;
          rdfs:range :Person ;
          rdfs:comment "Niece or nephew."@en ;
-         rdfs:label "Nibling"@en .
+         rdfs:label "Nibling"@en ;
+         :glyph "🧒" .
 
 
 ###  https://know.dev/niece
@@ -308,7 +332,8 @@
        rdfs:domain :Person ;
        rdfs:range :Person ;
        rdfs:label "Niece"@en ,
-                  "Sisarentytär"@fi .
+                  "Sisarentytär"@fi ;
+       :glyph "👧" .
 
 
 ###  https://know.dev/parent
@@ -319,7 +344,8 @@
         rdfs:domain :Person ;
         rdfs:range :Person ;
         rdfs:label "Parent"@en ,
-                   "Vanhempi"@fi .
+                   "Vanhempi"@fi ;
+        :glyph "🧑" .
 
 
 ###  https://know.dev/partner
@@ -332,7 +358,8 @@
          rdfs:range :Person ;
          rdfs:label "Kumppani"@fi ,
                     "Partner"@en ,
-                    "Partner"@sv .
+                    "Partner"@sv ;
+         :glyph "🧑" .
 
 
 ###  https://know.dev/pibling
@@ -342,7 +369,8 @@
          rdfs:domain :Person ;
          rdfs:range :Person ;
          rdfs:comment "Parent's sibling (aunt or uncle)."@en ;
-         rdfs:label "Pibling"@en .
+         rdfs:label "Pibling"@en ;
+         :glyph "🧑" .
 
 
 ###  https://know.dev/place
@@ -353,7 +381,8 @@
        rdfs:range :Place ;
        rdfs:label "Paikka"@fi ,
                   "Place"@en ,
-                  "Plats"@sv .
+                  "Plats"@sv ;
+       :glyph "📍" .
 
 
 ###  https://know.dev/relative
@@ -368,7 +397,8 @@
           rdfs:comment "A person connected by blood or marriage."@en ;
           rdfs:label "Relative"@en ,
                      "Släkting"@sv ,
-                     "Sukulainen"@fi .
+                     "Sukulainen"@fi ;
+          :glyph "🧑" .
 
 
 ###  https://know.dev/sibling
@@ -378,7 +408,8 @@
          rdfs:domain :Person ;
          rdfs:range :Person ;
          rdfs:label "Sibling"@en ,
-                    "Sisarus"@fi .
+                    "Sisarus"@fi ;
+         :glyph "👦" .
 
 
 ###  https://know.dev/sister
@@ -387,7 +418,8 @@
         rdfs:domain :Person ;
         rdfs:range :Person ;
         rdfs:label "Sisko"@fi ,
-                   "Sister"@en .
+                   "Sister"@en ;
+        :glyph "👧" .
 
 
 ###  https://know.dev/son
@@ -397,7 +429,8 @@
      rdfs:domain :Person ;
      rdfs:range :Person ;
      rdfs:label "Poika"@fi ,
-                "Son"@en .
+                "Son"@en ;
+     :glyph "👦" .
 
 
 ###  https://know.dev/spouse
@@ -409,7 +442,8 @@
         rdfs:domain :Person ;
         rdfs:range :Person ;
         rdfs:label "Puoliso"@fi ,
-                   "Spouse"@en .
+                   "Spouse"@en ;
+        :glyph "🧑" .
 
 
 ###  https://know.dev/stepchild
@@ -421,7 +455,8 @@
            rdfs:domain :Person ;
            rdfs:range :Person ;
            rdfs:label "Lapsipuoli"@fi ,
-                      "Stepchild"@en .
+                      "Stepchild"@en ;
+           :glyph "🧒" .
 
 
 ###  https://know.dev/stepdaughter
@@ -432,7 +467,8 @@
               rdfs:domain :Person ;
               rdfs:range :Person ;
               rdfs:label "Stepdaughter"@en ,
-                         "Tytärpuoli"@fi .
+                         "Tytärpuoli"@fi ;
+              :glyph "👧" .
 
 
 ###  https://know.dev/stepfather
@@ -443,7 +479,8 @@
             rdfs:domain :Person ;
             rdfs:range :Person ;
             rdfs:label "Isäpuoli"@fi ,
-                       "Stepfather"@en .
+                       "Stepfather"@en ;
+            :glyph "👨" .
 
 
 ###  https://know.dev/stepmother
@@ -454,7 +491,8 @@
             rdfs:domain :Person ;
             rdfs:range :Person ;
             rdfs:label "Stepmother"@en ,
-                       "Äitipuoli"@fi .
+                       "Äitipuoli"@fi ;
+            :glyph "👩" .
 
 
 ###  https://know.dev/stepparent
@@ -464,7 +502,8 @@
                      owl:IrreflexiveProperty ;
             rdfs:domain :Person ;
             rdfs:range :Person ;
-            rdfs:label "Stepparent"@en .
+            rdfs:label "Stepparent"@en ;
+            :glyph "🧑" .
 
 
 ###  https://know.dev/stepson
@@ -475,7 +514,8 @@
          rdfs:domain :Person ;
          rdfs:range :Person ;
          rdfs:label "Poikapuoli"@fi ,
-                    "Stepson"@en .
+                    "Stepson"@en ;
+         :glyph "👦" .
 
 
 ###  https://know.dev/uncle
@@ -485,7 +525,8 @@
        rdfs:domain :Person ;
        rdfs:range :Person ;
        rdfs:label "Setä"@fi ,
-                  "Uncle"@en .
+                  "Uncle"@en ;
+       :glyph "👨" .
 
 
 ###  https://know.dev/wife
@@ -495,7 +536,8 @@
       rdfs:domain :Person ;
       rdfs:range :Person ;
       rdfs:label "Vaimo"@fi ,
-                 "Wife"@en .
+                 "Wife"@en ;
+      :glyph "👩" .
 
 
 #################################################################
@@ -512,7 +554,8 @@ dcterms:identifier owl:equivalentProperty :id .
          rdfs:range xsd:anyURI ;
          rdfs:label "Account"@en ,
                     "Konto"@sv ,
-                    "Tili"@fi .
+                    "Tili"@fi ;
+         :glyph "👤" .
 
 
 ###  https://know.dev/age
@@ -523,7 +566,8 @@ dcterms:identifier owl:equivalentProperty :id .
      rdfs:range xsd:nonNegativeInteger ;
      rdfs:label "Age"@en ,
                 "Ikä"@fi ,
-                "Ålder"@sv .
+                "Ålder"@sv ;
+     :glyph "🕰️" .
 
 
 ###  https://know.dev/alias
@@ -534,7 +578,8 @@ dcterms:identifier owl:equivalentProperty :id .
        rdfs:comment "An alias or nickname of this person, if known."@en ;
        rdfs:label "Alias"@en ,
                   "Alias"@fi ,
-                  "Alias"@sv .
+                  "Alias"@sv ;
+       :glyph "🔀" .
 
 
 ###  https://know.dev/email
@@ -544,7 +589,8 @@ dcterms:identifier owl:equivalentProperty :id .
        rdfs:range xsd:string ;
        rdfs:label "E-post"@sv ,
                   "Email"@en ,
-                  "Sähköposti"@fi .
+                  "Sähköposti"@fi ;
+       :glyph "✉️" .
 
 
 ###  https://know.dev/end
@@ -555,7 +601,8 @@ dcterms:identifier owl:equivalentProperty :id .
      rdfs:range xsd:dateTime ;
      rdfs:label "End"@en ,
                 "Loppu"@fi ,
-                "Slutet"@sv .
+                "Slutet"@sv ;
+     :glyph "🏁" .
 
 
 ###  https://know.dev/glyph
@@ -565,7 +612,8 @@ dcterms:identifier owl:equivalentProperty :id .
          rdfs:domain :Thing ;
          rdfs:range xsd:string ;
          rdfs:label "Glyfi"@fi ,
-                    "Glyph"@en .
+                    "Glyph"@en ;
+         :glyph "🔣" .
 
 
 ###  https://know.dev/honorific
@@ -577,7 +625,8 @@ dcterms:identifier owl:equivalentProperty :id .
            rdfs:label "Hederstitel"@sv ,
                       "Honorific"@en ,
                       "Honortitolo"@eo ,
-                      "Kunnianimike"@fi .
+                      "Kunnianimike"@fi ;
+           :glyph "🎖️" .
 
 
 ###  https://know.dev/id
@@ -594,7 +643,8 @@ dcterms:identifier owl:equivalentProperty :id .
                "Kimlik"@tr ,
                "Tunniste"@fi ,
                "Ідентифікатор"@uk ,
-               "معرف"@ar .
+               "معرف"@ar ;
+    :glyph "🆔" .
 
 
 ###  https://know.dev/logo
@@ -604,7 +654,8 @@ dcterms:identifier owl:equivalentProperty :id .
       rdfs:range xsd:anyURI ;
       rdfs:label "Logo"@en ,
                  "Logo"@fi ,
-                 "Logo"@sv .
+                 "Logo"@sv ;
+      :glyph "🔶" .
 
 
 ###  https://know.dev/name
@@ -621,7 +672,8 @@ dcterms:identifier owl:equivalentProperty :id .
                  "Nome"@pt ,
                  "Nomo"@eo ,
                  "Назва"@uk ,
-                 "اسم"@ar .
+                 "اسم"@ar ;
+      :glyph "🎫" .
 
 
 ###  https://know.dev/nationality
@@ -631,7 +683,8 @@ dcterms:identifier owl:equivalentProperty :id .
              rdfs:range xsd:string ;
              rdfs:label "Kansallisuus"@fi ,
                         "Nationalitet"@sv ,
-                        "Nationality"@en .
+                        "Nationality"@en ;
+             :glyph "🪪" .
 
 
 ###  https://know.dev/note
@@ -641,7 +694,8 @@ dcterms:identifier owl:equivalentProperty :id .
       rdfs:range xsd:string ;
       rdfs:label "Anteckning"@sv ,
                  "Merkintä"@fi ,
-                 "Note"@en .
+                 "Note"@en ;
+      :glyph "📝" .
 
 
 ###  https://know.dev/phone
@@ -651,7 +705,8 @@ dcterms:identifier owl:equivalentProperty :id .
        rdfs:range xsd:string ;
        rdfs:label "Phone"@en ,
                   "Puhelin"@fi ,
-                  "Telefon"@sv .
+                  "Telefon"@sv ;
+       :glyph "📞" .
 
 
 ###  https://know.dev/photo
@@ -661,7 +716,8 @@ dcterms:identifier owl:equivalentProperty :id .
        rdfs:range xsd:anyURI ;
        rdfs:label "Foto"@sv ,
                   "Photo"@en ,
-                  "Valokuva"@fi .
+                  "Valokuva"@fi ;
+       :glyph "📷" .
 
 
 ###  https://know.dev/sex
@@ -672,7 +728,8 @@ dcterms:identifier owl:equivalentProperty :id .
      rdfs:range xsd:string ;
      rdfs:label "Kön"@sv ,
                 "Sex"@en ,
-                "Sukupuoli"@fi .
+                "Sukupuoli"@fi ;
+     :glyph "⚥" .
 
 
 ###  https://know.dev/size
@@ -682,7 +739,8 @@ dcterms:identifier owl:equivalentProperty :id .
       rdfs:domain :Thing ;
       rdfs:label "Koko"@fi ,
                  "Size"@en ,
-                 "Storlek"@sv .
+                 "Storlek"@sv ;
+      :glyph "📏" .
 
 
 ###  https://know.dev/sizeInBytes
@@ -693,7 +751,8 @@ dcterms:identifier owl:equivalentProperty :id .
              rdfs:range xsd:nonNegativeInteger ;
              rdfs:label "Koko tavuina"@fi ,
                         "Size in Bytes"@en ,
-                        "Storlek i byte"@sv .
+                        "Storlek i byte"@sv ;
+             :glyph "💾" .
 
 
 ###  https://know.dev/speaks
@@ -703,7 +762,8 @@ dcterms:identifier owl:equivalentProperty :id .
         rdfs:range xsd:language ;
         rdfs:label "Puhuu"@fi ,
                    "Speaks"@en ,
-                   "Talar"@sv .
+                   "Talar"@sv ;
+        :glyph "💬" .
 
 
 ###  https://know.dev/start
@@ -714,7 +774,8 @@ dcterms:identifier owl:equivalentProperty :id .
        rdfs:range xsd:dateTime ;
        rdfs:label "Alku"@fi ,
                   "Start"@en ,
-                  "Start"@sv .
+                  "Start"@sv ;
+       :glyph "▶️" .
 
 
 ###  https://know.dev/url
@@ -732,7 +793,8 @@ dcterms:identifier owl:equivalentProperty :id .
                 "URL"@tr ,
                 "URL-osoite"@fi ,
                 "URL-адреси"@uk ,
-                "محدد موقع الموارد الموحد"@ar .
+                "محدد موقع الموارد الموحد"@ar ;
+     :glyph "🔗" .
 
 
 #################################################################
@@ -742,7 +804,8 @@ dcterms:identifier owl:equivalentProperty :id .
 ###  https://know.dev/Activity
 :Activity rdf:type owl:Class ;
           rdfs:subClassOf :Event ;
-          rdfs:label "Activity"@en .
+          rdfs:label "Activity"@en ;
+          :glyph "🚣" .
 
 
 ###  https://know.dev/Airport
@@ -751,38 +814,43 @@ dcterms:identifier owl:equivalentProperty :id .
          rdfs:subClassOf :Place ;
          rdfs:label "Airport"@en ,
                     "Flygplats"@sv ,
-                    "Lentokenttä"@fi .
-
+                    "Lentokenttä"@fi ;
+         :glyph "🛫" .
 
 ###  https://know.dev/Appointment
 :Appointment rdf:type owl:Class ;
              rdfs:subClassOf :Event ;
-             rdfs:label "Appointment"@en .
+             rdfs:label "Appointment"@en ;
+             :glyph "🕙" .
 
 
 ###  https://know.dev/Birth
 :Birth rdf:type owl:Class ;
        rdfs:subClassOf :Event ;
-       rdfs:label "Birth"@en .
+       rdfs:label "Birth"@en ;
+       :glyph "👩‍🍼" .
 
 
 ###  https://know.dev/Birthday
 :Birthday rdf:type owl:Class ;
           rdfs:subClassOf :Event ;
-          rdfs:label "Birthday"@en .
+          rdfs:label "Birthday"@en ;
+          :glyph "🎂" .
 
 
 ###  https://know.dev/BirthdayParty
 :BirthdayParty rdf:type owl:Class ;
                rdfs:subClassOf :Party ;
-               rdfs:label "Birthday Party"@en .
+               rdfs:label "Birthday Party"@en ;
+               :glyph "🎉" .
 
 
 ###  https://know.dev/BuddhistTemple
 :BuddhistTemple rdf:type owl:Class ;
                 owl:equivalentClass schema:BuddhistTemple ;
                 rdfs:subClassOf :Temple ;
-                rdfs:label "Buddhist Temple"@en .
+                rdfs:label "Buddhist Temple"@en ;
+                :glyph "☸️" .
 
 
 ###  https://know.dev/Cafe
@@ -790,7 +858,8 @@ dcterms:identifier owl:equivalentProperty :id .
       owl:equivalentClass schema:CafeOrCoffeeShop ;
       rdfs:subClassOf :Place ;
       rdfs:label "Cafe"@en ,
-                 "Kahvila"@fi .
+                 "Kahvila"@fi ;
+      :glyph "☕" .
 
 
 ###  https://know.dev/Church
@@ -799,116 +868,134 @@ dcterms:identifier owl:equivalentProperty :id .
         rdfs:subClassOf :Temple ;
         rdfs:label "Chuch"@en ,
                    "Kirkko"@fi ,
-                   "Kyrka"@sv .
+                   "Kyrka"@sv ;
+        :glyph "⛪" .
 
 
 ###  https://know.dev/Class
 :Class rdf:type owl:Class ;
        rdfs:subClassOf :Group ;
-       rdfs:label "Class"@en .
+       rdfs:label "Class"@en ;
+       :glyph "🧑‍🏫" .
 
 
 ###  https://know.dev/Community
 :Community rdf:type owl:Class ;
            rdfs:subClassOf :Group ;
-           rdfs:label "Community"@en .
+           rdfs:label "Community"@en ;
+           :glyph "🏘️" .
 
 
 ###  https://know.dev/Company
 :Company rdf:type owl:Class ;
          rdfs:subClassOf :Organization ;
-         rdfs:label "Company"@en .
+         rdfs:label "Company"@en ;
+         :glyph "📃" .
 
 
 ###  https://know.dev/Conference
 :Conference rdf:type owl:Class ;
             rdfs:subClassOf :Meeting ;
             owl:disjointWith :Meetup ;
-            rdfs:label "Conference"@en .
+            rdfs:label "Conference"@en ;
+            :glyph "📛" .
 
 
 ###  https://know.dev/Congregation
 :Congregation rdf:type owl:Class ;
               rdfs:subClassOf :Group ;
-              rdfs:label "Congregation"@en .
+              rdfs:label "Congregation"@en ;
+              :glyph "⛪" .
 
 
 ###  https://know.dev/Consortium
 :Consortium rdf:type owl:Class ;
             owl:equivalentClass schema:Consortium ;
             rdfs:subClassOf :Organization ;
-            rdfs:label "Consortium"@en .
+            rdfs:label "Consortium"@en ;
+            :glyph "🌐" .
 
 
 ###  https://know.dev/Corporation
 :Corporation rdf:type owl:Class ;
              owl:equivalentClass schema:Corporation ;
              rdfs:subClassOf :Organization ;
-             rdfs:label "Corporation"@en .
+             rdfs:label "Corporation"@en ;
+             :glyph "📃" .
 
 
 ###  https://know.dev/Death
 :Death rdf:type owl:Class ;
        rdfs:subClassOf :Event ;
-       rdfs:label "Death"@en .
+       rdfs:label "Death"@en ;
+       :glyph "⚰️" .
 
 
 ###  https://know.dev/Event
 :Event rdf:type owl:Class ;
        owl:equivalentClass schema:Event ;
        rdfs:subClassOf :Thing ;
-       rdfs:label "Event"@en .
+       rdfs:label "Event"@en ;
+       :glyph "📅" .
 
 
 ###  https://know.dev/Family
 :Family rdf:type owl:Class ;
         rdfs:subClassOf :Group ;
-        rdfs:label "Family"@en .
+        rdfs:label "Family"@en ;
+        :glyph "👪" .
 
 
 ###  https://know.dev/File
 :File rdf:type owl:Class ;
       rdfs:subClassOf :Thing ;
       rdfs:label "File"@en ,
-                 "Tiedosto"@fi .
+                 "Tiedosto"@fi ;
+      :glyph "📄" .
 
 
 ###  https://know.dev/Government
 :Government rdf:type owl:Class ;
             rdfs:subClassOf :Organization ;
-            rdfs:label "Government"@en .
+            rdfs:label "Government"@en ;
+            :glyph "🎩" .
 
 
 ###  https://know.dev/Graduation
 :Graduation rdf:type owl:Class ;
             rdfs:subClassOf :Event ;
-            rdfs:label "Graduation"@en .
+            rdfs:label "Graduation"@en ;
+            :glyph "🎓" .
 
 
 ###  https://know.dev/Group
 :Group rdf:type owl:Class ;
        rdfs:subClassOf :Thing ;
-       rdfs:label "Group"@en .
+       rdfs:label "Group"@en ;
+       :glyph "🧑‍🤝‍🧑" .
 
 
 ###  https://know.dev/HinduTemple
 :HinduTemple rdf:type owl:Class ;
              owl:equivalentClass schema:HinduTemple ;
              rdfs:subClassOf :Temple ;
-             rdfs:label "Hindu Temple"@en .
+             rdfs:label "Hindu Temple"@en ;
+             :glyph "🛕" .
 
 
 ###  https://know.dev/Holiday
 :Holiday rdf:type owl:Class ;
          rdfs:subClassOf :Event ;
-         rdfs:label "Holiday"@en .
+         rdfs:label "Holiday"@en ;
+         :glyph "🏖️" .
 
 
 ###  https://know.dev/Hospital
 :Hospital rdf:type owl:Class ;
           owl:equivalentClass schema:Hospital ;
           rdfs:subClassOf :Place ;
-          rdfs:label "Hospital"@en .
+          rdfs:label "Hospital"@en ;
+          :glyph "🏥" .
 
 
 ###  https://know.dev/Hotel
@@ -916,59 +1003,68 @@ dcterms:identifier owl:equivalentProperty :id .
        owl:equivalentClass schema:Hotel ;
        rdfs:subClassOf :Place ;
        rdfs:label "Hotel"@en ,
-                  "Hotelli"@fi .
+                  "Hotelli"@fi ;
+       :glyph "🏨" .
 
 
 ###  https://know.dev/Landmark
 :Landmark rdf:type owl:Class ;
           owl:equivalentClass schema:LandmarksOrHistoricalBuildings ;
           rdfs:subClassOf :Place ;
-          rdfs:label "Landmark"@en .
+          rdfs:label "Landmark"@en ;
+          :glyph "📍" .
 
 
 ###  https://know.dev/Link
 :Link rdf:type owl:Class ;
       rdfs:subClassOf :Thing ;
       rdfs:label "Link"@en ,
-                 "Linkki"@fi .
+                 "Linkki"@fi ;
+      :glyph "🔗" .
 
 
 ###  https://know.dev/Meeting
 :Meeting rdf:type owl:Class ;
          rdfs:subClassOf :Event ;
-         rdfs:label "Meeting"@en .
+         rdfs:label "Meeting"@en ;
+         :glyph "🤝" .
 
 
 ###  https://know.dev/Meetup
 :Meetup rdf:type owl:Class ;
         rdfs:subClassOf :Meeting ;
-        rdfs:label "Meetup"@en .
+        rdfs:label "Meetup"@en ;
+        :glyph "🍻" .
 
 
 ###  https://know.dev/Mosque
 :Mosque rdf:type owl:Class ;
         owl:equivalentClass schema:Mosque ;
         rdfs:subClassOf :Temple ;
-        rdfs:label "Mosque"@en .
+        rdfs:label "Mosque"@en ;
+        :glyph "🕌" .
 
 
 ###  https://know.dev/Nationality
 :Nationality rdf:type owl:Class ;
              rdfs:subClassOf :Group ;
-             rdfs:label "Nationality"@en .
+             rdfs:label "Nationality"@en ;
+             :glyph "🪪" .
 
 
 ###  https://know.dev/Organization
 :Organization rdf:type owl:Class ;
               owl:equivalentClass schema:Organization ;
               rdfs:subClassOf :Group ;
-              rdfs:label "Organization"@en .
+              rdfs:label "Organization"@en ;
+              :glyph "🗃️" .
 
 
 ###  https://know.dev/Party
 :Party rdf:type owl:Class ;
        rdfs:subClassOf :Event ;
-       rdfs:label "Party"@en .
+       rdfs:label "Party"@en ;
+       :glyph "🎉" .
 
 
 ###  https://know.dev/Person
@@ -984,21 +1080,24 @@ dcterms:identifier owl:equivalentProperty :id .
                    "Persono"@eo ,
                    "Pessoa"@pt ,
                    "Особа"@uk ,
-                   "شخص"@ar .
+                   "شخص"@ar ;
+        :glyph "🧑" .
 
 
 ###  https://know.dev/Place
 :Place rdf:type owl:Class ;
        owl:equivalentClass schema:Place ;
        rdfs:subClassOf :Thing ;
-       rdfs:label "Place"@en .
+       rdfs:label "Place"@en ;
+       :glyph "📍" .
 
 
 ###  https://know.dev/Pub
 :Pub rdf:type owl:Class ;
      owl:equivalentClass schema:BarOrPub ;
      rdfs:subClassOf :Place ;
-     rdfs:label "Pub"@en .
+     rdfs:label "Pub"@en ;
+     :glyph "🍺" .
 
 
 ###  https://know.dev/Restaurant
@@ -1006,28 +1105,32 @@ dcterms:identifier owl:equivalentProperty :id .
             owl:equivalentClass schema:Restaurant ;
             rdfs:subClassOf :Place ;
             rdfs:label "Ravintola"@fi ,
-                       "Restaurant"@en .
+                       "Restaurant"@en ;
+            :glyph "🍽️" .
 
 
 ###  https://know.dev/School
 :School rdf:type owl:Class ;
         owl:equivalentClass schema:School ;
         rdfs:subClassOf :Organization ;
-        rdfs:label "School"@en .
+        rdfs:label "School"@en ;
+        :glyph "🏫" .
 
 
 ###  https://know.dev/Synagogue
 :Synagogue rdf:type owl:Class ;
            owl:equivalentClass schema:Synagogue ;
            rdfs:subClassOf :Temple ;
-           rdfs:label "Synagogue"@en .
+           rdfs:label "Synagogue"@en ;
+           :glyph "🕍" .
 
 
 ###  https://know.dev/Temple
 :Temple rdf:type owl:Class ;
         owl:equivalentClass schema:PlaceOfWorship ;
         rdfs:subClassOf :Place ;
-        rdfs:label "Temple"@en .
+        rdfs:label "Temple"@en ;
+        :glyph "🛐" .
 
 
 ###  https://know.dev/Thing
@@ -1043,26 +1146,30 @@ dcterms:identifier owl:equivalentProperty :id .
                   "Thing"@en ,
                   "Şey"@tr ,
                   "Річ"@uk ,
-                  "شيء"@ar .
+                  "شيء"@ar ;
+       :glyph "∃" .
 
 
 ###  https://know.dev/University
 :University rdf:type owl:Class ;
             owl:equivalentClass schema:CollegeOrUniversity ;
             rdfs:subClassOf :Organization ;
-            rdfs:label "University"@en .
+            rdfs:label "University"@en ;
+            :glyph "🏫" .
 
 
 ###  https://know.dev/Venue
 :Venue rdf:type owl:Class ;
        rdfs:subClassOf :Place ;
-       rdfs:label "Venue"@en .
+       rdfs:label "Venue"@en ;
+       :glyph "🏪" .
 
 
 ###  https://know.dev/Wedding
 :Wedding rdf:type owl:Class ;
          rdfs:subClassOf :Event ;
-         rdfs:label "Wedding"@en .
+         rdfs:label "Wedding"@en ;
+         :glyph "💒" .
 
 
 ###  Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi

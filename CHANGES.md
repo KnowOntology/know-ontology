@@ -7,7 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.1.8 - 2024-06-16
 ### Added
-- `know:glyph` property
+- Define `know:glyph` property
+- Glyphs for all ontology concepts
 
 ## 0.1.7 - 2024-06-14
 ### Changed
