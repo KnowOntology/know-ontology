@@ -251,6 +251,7 @@ task check: %w(src/know.ttl) do |t|
   require 'json/ld'
   require 'nokogiri'
   require 'rdf/json'
+  require 'rdf/rdfxml'
   require 'rdf/trix'
   puts RDF::Reader.open(t.prerequisites.first).count
 end
@@ -280,6 +281,9 @@ task properties: %w(src/know.ttl) do |t|
 end
 
 task :website => %w(src/know.ttl) do |t|
+  require 'json/ld'
+  require 'rdf/rdfxml'
+
   $ontology = RDF::Graph.load(t.prerequisites.first)
 
   ontology_classes.each do |klass_name, parent|
@@ -289,7 +293,9 @@ task :website => %w(src/know.ttl) do |t|
     klass_label = klass_graph.query([klass, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
     klass_props = ontology_relations(klass).merge(ontology_properties(klass))
     klass_spec = {
-      :ttl => RDF::Turtle::Writer.buffer(prefixes: PREFIXES) { |w| w << klass_graph },
+      :jsonld => JSON::LD::Writer.buffer(prefixes: PREFIXES) { |w| w << klass_graph },
+      :rdfxml => RDF::RDFXML::Writer.buffer(prefixes: PREFIXES) { |w| w << klass_graph },
+      :turtle => RDF::Turtle::Writer.buffer(prefixes: PREFIXES) { |w| w << klass_graph },
     }
 
     sh "touch ../know-website/doc/#{klass_name}.md" || abort
@@ -345,7 +351,21 @@ task :website => %w(src/know.ttl) do |t|
         <TabItem value="turtle" label="Turtle">
 
         ```turtle
-        #{klass_spec[:ttl]}
+        #{klass_spec[:turtle]}
+        ```
+
+        </TabItem>
+        <TabItem value="jsonld" label="JSON-LD">
+
+        ```json
+        #{klass_spec[:jsonld]}
+        ```
+
+        </TabItem>
+        <TabItem value="rdfxml" label="RDF/XML">
+
+        ```xml
+        #{klass_spec[:rdfxml]}
         ```
 
         </TabItem>
@@ -367,7 +387,9 @@ task :website => %w(src/know.ttl) do |t|
     property_glyph = property_graph.query([property, KNOW.glyph]).objects.first.to_s
     property_label = property_graph.query([property, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
     property_spec = {
-      :ttl => RDF::Turtle::Writer.buffer(prefixes: PREFIXES) { |w| w << property_graph },
+      :jsonld => JSON::LD::Writer.buffer(prefixes: PREFIXES) { |w| w << property_graph },
+      :rdfxml => RDF::RDFXML::Writer.buffer(prefixes: PREFIXES) { |w| w << property_graph },
+      :turtle => RDF::Turtle::Writer.buffer(prefixes: PREFIXES) { |w| w << property_graph },
     }
 
     sh "touch ../know-website/doc/#{property_name}.md" || abort
@@ -396,7 +418,21 @@ task :website => %w(src/know.ttl) do |t|
         <TabItem value="turtle" label="Turtle">
 
         ```turtle
-        #{property_spec[:ttl]}
+        #{property_spec[:turtle]}
+        ```
+
+        </TabItem>
+        <TabItem value="jsonld" label="JSON-LD">
+
+        ```json
+        #{property_spec[:jsonld]}
+        ```
+
+        </TabItem>
+        <TabItem value="rdfxml" label="RDF/XML">
+
+        ```xml
+        #{property_spec[:rdfxml]}
         ```
 
         </TabItem>
