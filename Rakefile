@@ -312,7 +312,7 @@ task :website => %w(src/know.ttl) do |t|
       out.puts
       out.puts <<~EOF
         | Property          | Label (en)     | Range                    |
-        | ----------------- | -------------- | ------------------------ |
+        | :---------------- | :------------- | :----------------------- |
       EOF
       klass_props.keys.sort.each do |property_name|
         property = KNOW[property_name]
