@@ -284,9 +284,13 @@ task :website => %w(src/know.ttl) do |t|
 
   ontology_classes.each do |klass_name, parent|
     klass = KNOW[klass_name]
-    klass_glyph = $ontology.query([klass, KNOW.glyph]).objects.first.to_s
-    klass_label = $ontology.query([klass, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
+    klass_graph = RDF::Graph::new { |g| g.insert($ontology.query([klass])) }
+    klass_glyph = klass_graph.query([klass, KNOW.glyph]).objects.first.to_s
+    klass_label = klass_graph.query([klass, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
     klass_props = ontology_relations(klass).merge(ontology_properties(klass))
+    klass_spec = {
+      :ttl => RDF::Turtle::Writer.buffer(prefixes: PREFIXES) { |w| w << klass_graph },
+    }
 
     sh "touch ../know-website/doc/#{klass_name}.md" || abort
 
@@ -307,29 +311,48 @@ task :website => %w(src/know.ttl) do |t|
 
         ## Properties
       EOF
-      next if klass_props.empty?
 
-      out.puts
-      out.puts <<~EOF
-        | Property          | Label (en)     | Range                    |
-        | :---------------- | :------------- | :----------------------- |
-      EOF
-      klass_props.keys.sort.each do |property_name|
-        property = KNOW[property_name]
-        property_label = $ontology.query([property, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
-        property_ranges = $ontology.query([property, RDFS.range]).objects
-        property_range = (property_ranges.first || XSD.string).qname(prefixes: PREFIXES)
-        property_range = case property_range.first
-          when :know
-            footlinks << ["`#{property_range.last}`", "/#{property_range.last}"]
-            "[`#{property_range.last}`]"
-          else "`#{property_range.join(':')}`"
+      unless klass_props.empty?
+        out.puts
+        out.puts <<~EOF
+          | Property          | Label (en)     | Range                    |
+          | :---------------- | :------------- | :----------------------- |
+        EOF
+        klass_props.keys.sort.each do |property_name|
+          property = KNOW[property_name]
+          property_label = $ontology.query([property, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
+          property_ranges = $ontology.query([property, RDFS.range]).objects
+          property_range = (property_ranges.first || XSD.string).qname(prefixes: PREFIXES)
+          property_range = case property_range.first
+            when :know
+              footlinks << ["`#{property_range.last}`", "/#{property_range.last}"]
+              "[`#{property_range.last}`]"
+            else "`#{property_range.join(':')}`"
+          end
+          out.puts %Q(| #{"[`#{property_name}`]".ljust(17)} | #{property_label.to_s.ljust(14)} | #{property_range.ljust(24)} |)
+          footlinks << ["`#{property_name}`", "/#{property_name}"]
         end
-        out.puts %Q(| #{"[`#{property_name}`]".ljust(17)} | #{property_label.to_s.ljust(14)} | #{property_range.ljust(24)} |)
-        footlinks << ["`#{property_name}`", "/#{property_name}"]
       end
 
       out.puts
+      out.puts <<~EOF
+        ## Specification
+
+        import Tabs from '@theme/Tabs';
+        import TabItem from '@theme/TabItem';
+
+        <Tabs>
+        <TabItem value="turtle" label="Turtle">
+
+        ```turtle
+        #{klass_spec[:ttl]}
+        ```
+
+        </TabItem>
+        </Tabs>
+      EOF
+
+      out.puts unless footlinks.empty?
       footlinks.sort.uniq.each do |k, v|
         out.puts %Q([#{k}]: #{v})
       end
@@ -340,12 +363,18 @@ task :website => %w(src/know.ttl) do |t|
     next if %i(birth death link nationality place).include?(property_name) # FIXME
 
     property = KNOW[property_name]
-    property_glyph = $ontology.query([property, KNOW.glyph]).objects.first.to_s
-    property_label = $ontology.query([property, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
+    property_graph = RDF::Graph::new { |g| g.insert($ontology.query([property])) }
+    property_glyph = property_graph.query([property, KNOW.glyph]).objects.first.to_s
+    property_label = property_graph.query([property, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
+    property_spec = {
+      :ttl => RDF::Turtle::Writer.buffer(prefixes: PREFIXES) { |w| w << property_graph },
+    }
 
     sh "touch ../know-website/doc/#{property_name}.md" || abort
 
     File.open("../know-website/doc/#{property_name}.md", 'w') do |out|
+      footlinks = []
+
       out.puts <<~EOF
         ---
         sidebar_label: #{property_glyph} #{property_label}
@@ -357,7 +386,27 @@ task :website => %w(src/know.ttl) do |t|
         https://know.dev/#{property_name}
         (`know:#{property_name}`)
         :::
+
+        ## Specification
+
+        import Tabs from '@theme/Tabs';
+        import TabItem from '@theme/TabItem';
+
+        <Tabs>
+        <TabItem value="turtle" label="Turtle">
+
+        ```turtle
+        #{property_spec[:ttl]}
+        ```
+
+        </TabItem>
+        </Tabs>
       EOF
+
+      out.puts unless footlinks.empty?
+      footlinks.sort.uniq.each do |k, v|
+        out.puts %Q([#{k}]: #{v})
+      end
     end
   end
 end
