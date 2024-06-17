@@ -866,7 +866,7 @@ dcterms:identifier owl:equivalentProperty :id .
 :Church rdf:type owl:Class ;
         owl:equivalentClass schema:Church ;
         rdfs:subClassOf :Temple ;
-        rdfs:label "Chuch"@en ,
+        rdfs:label "Church"@en ,
                    "Kirkko"@fi ,
                    "Kyrka"@sv ;
         :glyph "⛪" .

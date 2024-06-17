@@ -282,23 +282,70 @@ end
 task :website => %w(src/know.ttl) do |t|
   $ontology = RDF::Graph.load(t.prerequisites.first)
 
-  ontology_classes.each do |klass, parent|
-    sh "touch ../know-website/doc/#{klass}.md" || abort
-  end
+  ontology_classes.each do |klass_name, parent|
+    klass = KNOW[klass_name]
+    klass_glyph = $ontology.query([klass, KNOW.glyph]).objects.first.to_s
+    klass_label = $ontology.query([klass, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
+    klass_props = ontology_relations(klass).merge(ontology_properties(klass))
 
-  ontology_relations.each do |property, _|
-    sh "touch ../know-website/doc/#{property}.md" || abort
-  end
+    sh "touch ../know-website/doc/#{klass_name}.md" || abort
 
-  ontology_properties.each do |property, _|
-    sh "touch ../know-website/doc/#{property}.md" || abort
-    File.open("../know-website/doc/#{property}.md", 'w') do |out|
+    File.open("../know-website/doc/#{klass_name}.md", 'w') do |out|
       out.puts <<~EOF
-        # #{property}
+        ---
+        sidebar_label: #{klass_glyph} #{klass_label}
+        ---
+
+        # #{klass_glyph} #{klass_label} (class)
 
         :::note
-        https://know.dev/#{property}
-        (`know:#{property}`)
+        https://know.dev/#{klass_name}
+        (`know:#{klass_name}`)
+        :::
+
+        ## Properties
+      EOF
+      next if klass_props.empty?
+
+      out.puts
+      out.puts <<~EOF
+        | Property          | Label (en)     |
+        | ----------------- | -------------- |
+      EOF
+      klass_props.keys.sort.each do |property_name|
+        property = KNOW[property_name]
+        property_label = $ontology.query([property, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
+        property_ranges = $ontology.query([property, RDFS.range]).objects
+        out.puts %Q(| #{"[`#{property_name}`]".ljust(17)} | #{property_label.to_s.ljust(14)} |)
+      end
+
+      out.puts
+      klass_props.keys.sort.each do |property_name|
+        out.puts %Q([`#{property_name}`]: /#{property_name})
+      end
+    end
+  end
+
+  ontology_properties.merge(ontology_relations).keys.sort.each do |property_name|
+    next if %i(birth death link nationality place).include?(property_name) # FIXME
+
+    property = KNOW[property_name]
+    property_glyph = $ontology.query([property, KNOW.glyph]).objects.first.to_s
+    property_label = $ontology.query([property, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
+
+    sh "touch ../know-website/doc/#{property_name}.md" || abort
+
+    File.open("../know-website/doc/#{property_name}.md", 'w') do |out|
+      out.puts <<~EOF
+        ---
+        sidebar_label: #{property_glyph} #{property_label}
+        ---
+
+        # #{property_glyph} #{property_label} (property)
+
+        :::note
+        https://know.dev/#{property_name}
+        (`know:#{property_name}`)
         :::
       EOF
     end
