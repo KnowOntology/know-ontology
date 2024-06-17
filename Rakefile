@@ -291,6 +291,8 @@ task :website => %w(src/know.ttl) do |t|
     sh "touch ../know-website/doc/#{klass_name}.md" || abort
 
     File.open("../know-website/doc/#{klass_name}.md", 'w') do |out|
+      footlinks = [["`#{klass_name}`", "/#{klass_name}"]]
+
       out.puts <<~EOF
         ---
         sidebar_label: #{klass_glyph} #{klass_label}
@@ -309,19 +311,27 @@ task :website => %w(src/know.ttl) do |t|
 
       out.puts
       out.puts <<~EOF
-        | Property          | Label (en)     |
-        | ----------------- | -------------- |
+        | Property          | Label (en)     | Range                    |
+        | ----------------- | -------------- | ------------------------ |
       EOF
       klass_props.keys.sort.each do |property_name|
         property = KNOW[property_name]
         property_label = $ontology.query([property, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
         property_ranges = $ontology.query([property, RDFS.range]).objects
-        out.puts %Q(| #{"[`#{property_name}`]".ljust(17)} | #{property_label.to_s.ljust(14)} |)
+        property_range = (property_ranges.first || XSD.string).qname(prefixes: PREFIXES)
+        property_range = case property_range.first
+          when :know
+            footlinks << ["`#{property_range.last}`", "/#{property_range.last}"]
+            "[`#{property_range.last}`]"
+          else "`#{property_range.join(':')}`"
+        end
+        out.puts %Q(| #{"[`#{property_name}`]".ljust(17)} | #{property_label.to_s.ljust(14)} | #{property_range.ljust(24)} |)
+        footlinks << ["`#{property_name}`", "/#{property_name}"]
       end
 
       out.puts
-      klass_props.keys.sort.each do |property_name|
-        out.puts %Q([`#{property_name}`]: /#{property_name})
+      footlinks.sort.uniq.each do |k, v|
+        out.puts %Q([#{k}]: #{v})
       end
     end
   end
