@@ -1,5 +1,6 @@
 require 'active_support'
 require 'json'
+require 'know/ontology'
 require 'rdf'
 require 'rdf/turtle'
 
@@ -11,19 +12,6 @@ ActiveSupport::Inflector.inflections(:en) do |inflect|
 end
 
 LANG = :en
-
-KNOW = RDF::Vocabulary.new('https://know.dev/')
-
-PREFIXES = {
-  dcterms: 'http://purl.org/dc/terms/',
-  foaf:    'http://xmlns.com/foaf/0.1/',
-  know:    KNOW.to_s,
-  owl:     'http://www.w3.org/2002/07/owl#',
-  rdf:     'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-  rdfs:    'http://www.w3.org/2000/01/rdf-schema#',
-  schema:  'https://schema.org/',
-  xsd:     'http://www.w3.org/2001/XMLSchema#',
-}
 
 task default: %w(know.jsonld)
 
@@ -56,16 +44,17 @@ end
 
 desc "Generate export in JSON Schema format"
 file 'know.schema.json' => %w(src/know.ttl) do |t|
-  $ontology = RDF::Graph.load(t.prerequisites.first)
+  ontology = Know::Ontology.load(t.prerequisites.first)
 
   def js_type(property_type)
     case property_type
-      when Array then property_type.map { |t| js_type(t) }
-      when XSD.anyURI then { type: :string, format: :iri }
-      when XSD.dateTime then { type: :string, format: :'date-time' }
-      when XSD.language then { type: :string }
-      when XSD.nonNegativeInteger then { type: :number, minimum: 0 }
-      when XSD.string then { type: :string }
+      when ::Array then property_type.map { |t| js_type(t) }
+      when ::Know::Ontology::Concept then { '$ref': "#/$defs/#{property_type.name}" }
+      when ::XSD.anyURI then { type: :string, format: :iri }
+      when ::XSD.dateTime then { type: :string, format: :'date-time' }
+      when ::XSD.language then { type: :string }
+      when ::XSD.nonNegativeInteger then { type: :number, minimum: 0 }
+      when ::XSD.string then { type: :string }
       else { '$ref': "#/$defs#{property_type.path}" }
     end
   end
@@ -78,42 +67,32 @@ file 'know.schema.json' => %w(src/know.ttl) do |t|
       '$defs': {},
     }
 
-    ontology_classes.each do |klass_name, parent_name|
-      klass = KNOW[klass_name]
-      klass_label = $ontology.query([klass, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
-      klass_props = ontology_relations(klass).merge(ontology_properties(klass))
-
-      schema[:'$defs'][klass_name] = {
-        '$anchor': klass_name,
-        title: klass_label,
+    ontology.classes.each do |klass|
+      schema[:'$defs'][klass.name] = {
+        '$anchor': klass.name,
+        title: klass.label,
         type: :object,
-        allOf: klass_name == :Thing ? [] : [{ '$ref': "#/$defs/#{parent_name}" }],
-        properties: klass_props.keys.sort.inject({}) do |properties, property_name|
-          property = KNOW[property_name]
-          property_label = $ontology.query([property, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
-          property_ranges = $ontology.query([property, RDFS.range]).objects
-          property_range = property_ranges.first || XSD.string
+        allOf: klass.top? ? [] : [{ '$ref': "#/$defs/#{klass.superclass.name}" }],
+        properties: klass.properties.inject({}) do |properties, property|
+          properties[property.name] = {
+            name: property.name,
+            title: property.label,
+          }.merge(js_type(property.range || XSD.string)).compact
 
-          properties[property_name] = {
-            name: property_name,
-            title: property_label,
-          }.merge(js_type(property_range)).compact
-
-          instance_count = klass_props[property_name]
-          if instance_count.end.nil? then
-            property_name = pluralize(property_name)
+          unless property.functional?
+            property_name = pluralize(property.name)
             properties[property_name] = {
               name: property_name,
-              title: pluralize(property_label),
+              title: pluralize(property.label),
               type: :array,
-              items: js_type(property_range),
+              items: js_type(property.range || XSD.string),
             }.compact
           end
 
           properties
         end
       }
-      schema[:'$defs'][klass_name].delete(:allOf) if schema[:'$defs'][klass_name][:allOf].empty?
+      schema[:'$defs'][klass.name].delete(:allOf) if schema[:'$defs'][klass.name][:allOf].empty?
     end
 
     output.puts JSON.pretty_generate(schema)
@@ -163,33 +142,30 @@ desc "Generate export in XML Schema (XSD) format"
 file 'know.xsd' => %w(src/know.ttl) do |t|
   require 'nokogiri'
 
-  $ontology = RDF::Graph.load(t.prerequisites.first)
+  ontology = Know::Ontology.load(t.prerequisites.first)
 
   def xsd_type(property_type)
     return 'xs:anySimpleType' if property_type.nil?
-    curie = property_type.qname(prefixes: PREFIXES)
-    case curie.first
-      when :know then curie.last
-      when :xsd then "xs:#{curie.last}"
-      else raise "unknown property type: #{property_type.inspect}"
+    case property_type
+      when ::Array then property_type.map { |t| xsd_type(t) }
+      when ::Know::Ontology::Concept then property_type.name
+      else
+        curie = property_type.qname(prefixes: PREFIXES)
+        case curie.first
+          when :know then curie.last
+          when :xsd then "xs:#{curie.last}"
+          else raise "unknown property type: #{property_type.inspect}"
+        end
     end
   end
 
   def emit_properties(xml, klass)
-    klass_props = ontology_relations(klass).merge(ontology_properties(klass))
-    return if klass_props.empty?
-
+    return if klass.properties.empty?
     xml[:xs].choice(minOccurs: 0, maxOccurs: :unbounded) do
-      klass_props.keys.sort.each.with_index do |property_name, property_index|
-        property = KNOW[property_name]
-        property_label = $ontology.query([property, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
-        property_ranges = $ontology.query([property, RDFS.range]).objects
-        property_type = xsd_type(property_ranges.first)
-
-        instance_count = klass_props[property_name]
-        property_occurs = instance_count.end || :unbounded
-
-        xml[:xs].element(name: property_name, type: property_type, minOccurs: 0, maxOccurs: property_occurs)
+      klass.properties.each do |property|
+        property_type = xsd_type(property.range)
+        property_occurs = property.cardinality.end || :unbounded
+        xml[:xs].element(name: property.name, type: property_type, minOccurs: 0, maxOccurs: property_occurs)
       end
     end
   end
@@ -202,11 +178,11 @@ file 'know.xsd' => %w(src/know.ttl) do |t|
                     targetNamespace: KNOW.to_s,
                     elementFormDefault: 'qualified') do
 
-      ontology_classes.each do |klass_name, _|
-        singular = dasherize(underscore(klass_name))
+      ontology.classes.each do |klass|
+        singular = dasherize(underscore(klass.name))
         plural = pluralize(singular)
 
-        xml[:xs].element(name: singular, type: klass_name)
+        xml[:xs].element(name: singular, type: klass.name)
         xml[:xs].element(name: plural) do
           xml[:xs].complexType do
             xml[:xs].sequence do
@@ -216,16 +192,13 @@ file 'know.xsd' => %w(src/know.ttl) do |t|
         end
       end
 
-      ontology_classes.each do |klass_name, parent_name|
-        klass = KNOW[klass_name]
-        klass_label = $ontology.query([klass, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
-
-        xml[:xs].complexType(name: klass_name) do
-          if klass_name == 'Thing'
+      ontology.classes.each do |klass|
+        xml[:xs].complexType(name: klass.name) do
+          if klass.top?
             emit_properties(xml, klass)
           else
             xml[:xs].complexContent do
-              xml[:xs].extension(base: parent_name) do
+              xml[:xs].extension(base: klass.superclass.name) do
                 emit_properties(xml, klass)
               end
             end
@@ -258,228 +231,24 @@ end
 
 desc "List ontology classes"
 task classes: %w(src/know.ttl) do |t|
-  $ontology = RDF::Graph.load(t.prerequisites.first)
-  ontology_classes.keys.sort.each do |klass|
+  ontology = Know::Ontology.load(t.prerequisites.first)
+  ontology.classes.each do |klass|
     if ENV['JSON']
-      puts "\"#{klass}\","
+      puts "\"#{klass.name}\","
     else
-      puts klass
+      puts klass.name
     end
   end
 end
 
 desc "List ontology properties"
 task properties: %w(src/know.ttl) do |t|
-  $ontology = RDF::Graph.load(t.prerequisites.first)
-  ontology_relations.merge(ontology_properties).keys.sort.each do |property|
+  ontology = Know::Ontology.load(t.prerequisites.first)
+  ontology.properties.each do |property|
     if ENV['JSON']
-      puts "\"#{property}\","
+      puts "\"#{property.name}\","
     else
-      puts property
+      puts property.name
     end
   end
-end
-
-task :website => %w(src/know.ttl) do |t|
-  require 'json/ld'
-  require 'rdf/rdfxml'
-
-  $ontology = RDF::Graph.load(t.prerequisites.first)
-
-  ontology_classes.each do |klass_name, parent|
-    klass = KNOW[klass_name]
-    klass_graph = RDF::Graph::new { |g| g.insert($ontology.query([klass])) }
-    klass_glyph = klass_graph.query([klass, KNOW.glyph]).objects.first.to_s
-    klass_label = klass_graph.query([klass, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
-    klass_props = ontology_relations(klass).merge(ontology_properties(klass))
-    klass_spec = {
-      :jsonld => JSON::LD::Writer.buffer(prefixes: PREFIXES) { |w| w << klass_graph },
-      :rdfxml => RDF::RDFXML::Writer.buffer(prefixes: PREFIXES) { |w| w << klass_graph },
-      :turtle => RDF::Turtle::Writer.buffer(prefixes: PREFIXES) { |w| w << klass_graph },
-    }
-
-    sh "touch ../know-website/doc/#{klass_name}.md" || abort
-
-    File.open("../know-website/doc/#{klass_name}.md", 'w') do |out|
-      footlinks = [["`#{klass_name}`", "/#{klass_name}"]]
-
-      out.puts <<~EOF
-        ---
-        sidebar_label: #{klass_glyph} #{klass_label}
-        ---
-
-        # #{klass_glyph} #{klass_label} (class)
-
-        :::note
-        https://know.dev/#{klass_name}
-        (`know:#{klass_name}`)
-        :::
-
-        ## Properties
-      EOF
-
-      unless klass_props.empty?
-        out.puts
-        out.puts <<~EOF
-          | Property          | Label (en)     | Range                    |
-          | :---------------- | :------------- | :----------------------- |
-        EOF
-        klass_props.keys.sort.each do |property_name|
-          property = KNOW[property_name]
-          property_label = $ontology.query([property, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
-          property_ranges = $ontology.query([property, RDFS.range]).objects
-          property_range = (property_ranges.first || XSD.string).qname(prefixes: PREFIXES)
-          property_range = case property_range.first
-            when :know
-              footlinks << ["`#{property_range.last}`", "/#{property_range.last}"]
-              "[`#{property_range.last}`]"
-            else "`#{property_range.join(':')}`"
-          end
-          out.puts %Q(| #{"[`#{property_name}`]".ljust(17)} | #{property_label.to_s.ljust(14)} | #{property_range.ljust(24)} |)
-          footlinks << ["`#{property_name}`", "/#{property_name}"]
-        end
-      end
-
-      out.puts
-      out.puts <<~EOF
-        ## Specification
-
-        import Tabs from '@theme/Tabs';
-        import TabItem from '@theme/TabItem';
-
-        <Tabs>
-        <TabItem value="turtle" label="Turtle">
-
-        ```turtle
-        #{klass_spec[:turtle]}
-        ```
-
-        </TabItem>
-        <TabItem value="jsonld" label="JSON-LD">
-
-        ```json
-        #{klass_spec[:jsonld]}
-        ```
-
-        </TabItem>
-        <TabItem value="rdfxml" label="RDF/XML">
-
-        ```xml
-        #{klass_spec[:rdfxml]}
-        ```
-
-        </TabItem>
-        </Tabs>
-      EOF
-
-      out.puts unless footlinks.empty?
-      footlinks.sort.uniq.each do |k, v|
-        out.puts %Q([#{k}]: #{v})
-      end
-    end
-  end
-
-  ontology_properties.merge(ontology_relations).keys.sort.each do |property_name|
-    next if %i(birth death link nationality place).include?(property_name) # FIXME
-
-    property = KNOW[property_name]
-    property_graph = RDF::Graph::new { |g| g.insert($ontology.query([property])) }
-    property_glyph = property_graph.query([property, KNOW.glyph]).objects.first.to_s
-    property_label = property_graph.query([property, RDFS.label]).objects.find { |o| o.language == LANG }.to_s
-    property_spec = {
-      :jsonld => JSON::LD::Writer.buffer(prefixes: PREFIXES) { |w| w << property_graph },
-      :rdfxml => RDF::RDFXML::Writer.buffer(prefixes: PREFIXES) { |w| w << property_graph },
-      :turtle => RDF::Turtle::Writer.buffer(prefixes: PREFIXES) { |w| w << property_graph },
-    }
-
-    sh "touch ../know-website/doc/#{property_name}.md" || abort
-
-    File.open("../know-website/doc/#{property_name}.md", 'w') do |out|
-      footlinks = []
-
-      out.puts <<~EOF
-        ---
-        sidebar_label: #{property_glyph} #{property_label}
-        ---
-
-        # #{property_glyph} #{property_label} (property)
-
-        :::note
-        https://know.dev/#{property_name}
-        (`know:#{property_name}`)
-        :::
-
-        ## Specification
-
-        import Tabs from '@theme/Tabs';
-        import TabItem from '@theme/TabItem';
-
-        <Tabs>
-        <TabItem value="turtle" label="Turtle">
-
-        ```turtle
-        #{property_spec[:turtle]}
-        ```
-
-        </TabItem>
-        <TabItem value="jsonld" label="JSON-LD">
-
-        ```json
-        #{property_spec[:jsonld]}
-        ```
-
-        </TabItem>
-        <TabItem value="rdfxml" label="RDF/XML">
-
-        ```xml
-        #{property_spec[:rdfxml]}
-        ```
-
-        </TabItem>
-        </Tabs>
-      EOF
-
-      out.puts unless footlinks.empty?
-      footlinks.sort.uniq.each do |k, v|
-        out.puts %Q([#{k}]: #{v})
-      end
-    end
-  end
-end
-
-def ontology_classes
-  result = {}
-  query = RDF::Query.new({ klass: { RDF.type => OWL.Class, RDFS.subClassOf => :parent } })
-  query.execute($ontology).each do |solution|
-    klass_name = solution.klass.qname(prefixes: PREFIXES).last
-    parent_name = solution.parent.qname(prefixes: PREFIXES).last
-    result[klass_name] = parent_name
-  end
-  result
-end
-
-def ontology_relations(klass = nil)
-  result = {}
-  filter = klass ? { RDFS.domain => klass } : {}
-  query = RDF::Query.new({ property: { RDF.type => OWL.ObjectProperty }.merge(filter) })
-  query.execute($ontology).each do |solution|
-    property = solution.property
-    property_name = property.qname(prefixes: PREFIXES).last
-    property_functional = !$ontology.query([property, RDF.type, OWL.FunctionalProperty]).nil?
-    result[property_name] = (0..(property_functional ? 1 : nil))
-  end
-  result
-end
-
-def ontology_properties(klass = nil)
-  result = {}
-  filter = klass ? { RDFS.domain => klass } : {}
-  query = RDF::Query.new({ property: { RDF.type => OWL.DatatypeProperty }.merge(filter) })
-  query.execute($ontology).each do |solution|
-    property = solution.property
-    property_name = property.qname(prefixes: PREFIXES).last
-    property_functional = !$ontology.query([property, RDF.type, OWL.FunctionalProperty]).nil?
-    result[property_name] = (0..(property_functional ? 1 : nil))
-  end
-  result
 end

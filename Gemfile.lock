@@ -35,6 +35,7 @@ GEM
       multi_json (~> 1.15)
       rack (>= 2.2, < 4)
       rdf (~> 3.3)
+    know (0.0.2)
     link_header (0.0.8)
     matrix (0.4.2)
     mini_portile2 (2.8.7)
@@ -88,6 +89,7 @@ PLATFORMS
 DEPENDENCIES
   activesupport
   json-ld
+  know
   nokogiri
   rake
   rdf
